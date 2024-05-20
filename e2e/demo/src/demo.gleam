@@ -45,13 +45,7 @@ fn update(model: Model, msg: Msg) {
     UpdateModel(value) -> #(value, effect.none())
     DisplayBasicToast(content, toast) -> #(model, toast(content))
     DisplayCustomToast(level) -> {
-      let content = case level {
-        level.Standard -> "Standard"
-        level.Success -> "Success"
-        level.Warning -> "Warning"
-        level.Error -> "Error"
-        level.Info -> "Info"
-      }
+      let content = level.to_string(level)
       toast.options()
       |> toast.timeout(model * 1000)
       |> toast.level(level)

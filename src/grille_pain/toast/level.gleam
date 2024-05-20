@@ -8,10 +8,10 @@ pub type Level {
 
 pub fn to_string(level: Level) {
   case level {
-    Standard -> "standard"
-    Info -> "info"
-    Warning -> "warning"
-    Error -> "error"
-    Success -> "succes"
+    Standard -> "Standard"
+    Info -> "Info"
+    Warning -> "Warning"
+    Error -> "Error"
+    Success -> "Success"
   }
 }
