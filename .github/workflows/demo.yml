@@ -34,13 +34,13 @@ jobs:
       - name: Build demo
         run: gleam run -m lustre/dev build
         working-directory: e2e/demo
+      - name: Copy files
+        run: |
+          mkdir _site
+          cp -r e2e/demo/priv _site
+          cp e2e/demo/index.html _site
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: |
-            e2e/demo/priv
-            e2e/demo/index.html
+        uses: actions/upload-pages-artifact@v3
 
   deploy:
     runs-on: ubuntu-latest
