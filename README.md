@@ -23,3 +23,15 @@ gleam run   # Run the project
 gleam test  # Run the tests
 gleam shell # Run an Erlang shell
 ```
+
+## Styling
+
+--grille_pain-width
+--grille_pain-toast-width,
+--grille_pain-toast-min-height
+--grille_pain-toast-max-height
+--grille_pain-toast-border-radius
+
+--grille_pain-info-background
+--grille_pain-info-text-color
+--grille_pain-info-progress-bar

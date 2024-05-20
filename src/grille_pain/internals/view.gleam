@@ -82,11 +82,11 @@ fn toast_class() {
     sketch.display("flex"),
     sketch.flex_direction("column"),
     // Sizes
-    sketch.width_("var(--grille_pain-width, 320px)"),
-    sketch.min_height_("var(--toast-min-height, 64px)"),
-    sketch.max_height_("var(--toast-max-height, 800px)"),
+    sketch.width_("var(--grille_pain-toast-width, 320px)"),
+    sketch.min_height_("var(--grille_pain-toast-min-height, 64px)"),
+    sketch.max_height_("var(--grille_pain-toast-max-height, 800px)"),
     // Spacings
-    sketch.border_radius_("var(--grille_pain-border-radius, 6px)"),
+    sketch.border_radius_("var(--grille_pain-toast-border-radius, 6px)"),
     // Colors
     sketch.box_shadow("0px 4px 12px rgba(0, 0, 0, 0.1)"),
     // Animation
@@ -97,13 +97,16 @@ fn toast_class() {
 
 fn toast_colors(level: Level) {
   let #(background, text_color) = colors.from_level(level)
-  let id = string.join(["grille_pain", background, text_color], "-")
+  let level = level.to_string(level)
+  let id = string.join(["grille_pain", level], "-")
   sketch.to_lustre(
     sketch.dynamic(id, [
       sketch.background(
-        "var(--grille_pain-info-background, " <> background <> ")",
+        "var(--grille_pain-" <> level <> "-background, " <> background <> ")",
       ),
-      sketch.color("var(--grille_pain-info-text-color, " <> text_color <> ")"),
+      sketch.color(
+        "var(--grille_pain-" <> level <> "-text-color, " <> text_color <> ")",
+      ),
     ]),
   )
 }
@@ -114,7 +117,7 @@ fn text_wrapper() {
     sketch.align_items("center"),
     sketch.flex("1"),
     sketch.padding_("8px 16px"),
-    sketch.font_size(px(12)),
+    sketch.font_size(px(14)),
   ])
   |> sketch.to_lustre()
 }

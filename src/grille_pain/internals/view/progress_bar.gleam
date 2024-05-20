@@ -32,7 +32,9 @@ fn pb_animation(duration: Int) {
 
 fn pb_background_color(level: Level) {
   let back_color = colors.progress_bar_from_level(level)
-  let background = "var(--grille_pain-info-progress-bar, " <> back_color <> ")"
+  let level = level.to_string(level)
+  let background =
+    "var(--grille_pain-" <> level <> "-progress-bar, " <> back_color <> ")"
   string.join(["grille_pain", "pb", "background", back_color], "-")
   |> sketch.dynamic([sketch.background(background)])
   |> sketch.to_lustre()

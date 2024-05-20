@@ -21,12 +21,11 @@ import sketch/options as sketch_options
 import tardis
 
 pub fn setup(opts: Options) {
-  let node = document.create_element("div")
+  let node = document.create_element("grille-pain")
   let lustre_root_ = document.create_element("div")
   let shadow_root = shadow.attach_shadow(node, shadow.Open)
   let lustre_root = dynamic.unsafe_coerce(dynamic.from(lustre_root_))
   shadow.append_child(shadow_root, lustre_root_)
-  element.set_attribute(node, "class", "grille-pain")
   document.body()
   |> element.append_child(node)
   ffi.add_keyframe(shadow_root)

@@ -54,7 +54,7 @@ pub fn main(attributes, children) {
     s.margin_("0 auto"),
     s.display("flex"),
     s.flex_direction("column"),
-    s.gap(px(24)),
+    s.gap(px(48)),
   ])
 }
 
@@ -96,15 +96,15 @@ pub fn actions_wrapper(attributes, children) {
   l.element("div", attributes, children, [s.display("flex"), s.gap(px(12))])
 }
 
-pub fn toast_button(color, attributes, children) {
-  let id = "button-" <> color
+pub fn toast_button(background, color, attributes, children) {
+  let id = "button-" <> background
   l.dynamic("button", attributes, children, id, [
     s.font_family("inherit"),
     s.cursor("pointer"),
     s.appearance("none"),
-    s.background(color),
+    s.background(background),
     s.border("none"),
-    s.color(palette.white),
+    s.color(color),
     s.font_size(px(20)),
     s.padding_("12px 24px"),
     s.border_radius(px(10)),
@@ -113,4 +113,16 @@ pub fn toast_button(color, attributes, children) {
     s.transition(".3s box-shadow"),
     s.active([s.box_shadow("inset 2px 2px 5px 1px #aaa")]),
   ])
+}
+
+pub fn section(attributes, children) {
+  l.element("section", attributes, children, [
+    s.display("flex"),
+    s.flex_direction("column"),
+    s.gap(px(12)),
+  ])
+}
+
+pub fn section_description(attributes, children) {
+  l.element("div", attributes, children, [])
 }
