@@ -18,6 +18,9 @@ styles won't intervene with yours.
 
 This package is inspired by `react-toastify`, for colors and animations.
 
+> [!WARN]
+> It's only working for JavaScript target as of now!
+
 ## Installation
 
 ```sh
