@@ -1,4 +1,3 @@
-import gleam/io
 import gleam/option.{type Option, None, Some}
 import grille_pain/internals/data/msg
 import grille_pain/internals/ffi
@@ -61,6 +60,5 @@ pub fn warning(content: String) {
 }
 
 pub fn custom(options: Options, content: String) {
-  io.debug("there ?")
   dispatch_toast(options, content)
 }

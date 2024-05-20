@@ -27,7 +27,7 @@ pub fn add(
   let new_toast = toast.new(model.id, content, level, timeout, model.root)
   let new_toasts = [new_toast, ..model.toasts]
   let new_id = model.id + 1
-  Model(..model, toasts: new_toasts, id: new_id, timeout: timeout)
+  Model(..model, toasts: new_toasts, id: new_id)
 }
 
 fn update_toast(model: Model, id: Int, updater: fn(Toast) -> Toast) {

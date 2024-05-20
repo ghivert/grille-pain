@@ -1,5 +1,5 @@
+import gleam/function
 import gleam/int
-import gleam/io
 import gleam/string
 import grille_pain/internals/data/toast.{type Toast}
 import grille_pain/internals/view/colors
@@ -9,16 +9,12 @@ import sketch
 import sketch/size.{px}
 
 pub fn view(toast: Toast) {
-  io.debug(toast)
-  html.div(
-    [
-      pb_play_state(toast.running),
-      pb_background_color(toast.level),
-      pb_animation(toast.animation_duration),
-      pb_base(),
-    ],
-    [],
-  )
+  function.flip(html.div)([], [
+    pb_play_state(toast.running),
+    pb_background_color(toast.level),
+    pb_animation(toast.animation_duration),
+    pb_base(),
+  ])
 }
 
 fn pb_base() {
@@ -28,8 +24,6 @@ fn pb_base() {
 }
 
 fn pb_animation(duration: Int) {
-  io.debug("duration")
-  io.debug(duration)
   let duration_ = int.to_string(duration / 1000)
   [sketch.animation(duration_ <> "s linear 0s progress_bar")]
   |> sketch.dynamic("toast-duration-" <> duration_, _)

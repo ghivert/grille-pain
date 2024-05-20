@@ -1,4 +1,3 @@
-import gleam/io
 import grille_pain/toast
 import lustre/effect
 
@@ -35,6 +34,5 @@ pub fn warning(content: String) {
 
 pub fn custom(options: toast.Options, content: String) {
   use _dispatch <- effect.from()
-  io.debug("nsauternsauitensrtaue")
   toast.custom(options, content)
 }
