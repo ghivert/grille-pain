@@ -19,7 +19,7 @@ styles won't intervene with yours.
 This package is inspired by [`react-toastify`](https://github.com/fkhadra/react-toastify),
 for colors and animations.
 
-> [!WARN]
+> [!WARNING]
 > It's only working for JavaScript target as of now!
 
 ## Installation
