@@ -57,7 +57,7 @@ fn update(model: Model, msg: Msg) {
 
 fn header() {
   layout.header_wrapper([], [
-    layout.lucy([attribute.src("/priv/images/lucy.svg")]),
+    layout.lucy([attribute.src("./priv/images/lucy.svg")]),
     layout.title_wrapper([], [
       layout.title([], [html.text("Hello Grille-Pain!")]),
       layout.subtitle([], [
