@@ -1,4 +1,4 @@
-# 🍞 Grille-Pain
+# 🍞 Grille-Pain — The French Toaster
 
 `grille_pain` is a toaster for lustre, and gleam in a more general manner. It
 tries to be both simple to use, and simple to customise to adapt to your use
