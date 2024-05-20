@@ -34,12 +34,11 @@ jobs:
         working-directory: e2e/demo
       - name: Upload artifacts
         uses: actions/upload-artifacts@v4
-        working-directory: e2e/demo
         with:
           name: github-pages
           path: |
-            priv
-            index.html
+            e2e/demo/priv
+            e2e/demo/index.html
 
   deploy:
     runs-on: ubuntu-latest
