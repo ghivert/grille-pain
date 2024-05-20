@@ -5,15 +5,16 @@ import gleam/option.{type Option}
 import grille_pain/internals/data/toast.{type Toast, Toast}
 import grille_pain/internals/ffi
 import grille_pain/toast/level.{type Level}
+import plinth/browser/shadow.{type ShadowRoot}
 
 pub type Model {
-  Model(toasts: List(Toast), id: Int, timeout: Int)
+  Model(toasts: List(Toast), id: Int, timeout: Int, root: ShadowRoot)
 }
 
-pub fn new(timeout: Int) {
+pub fn new(root: ShadowRoot, timeout: Int) {
   let toasts = []
   let id = 0
-  Model(toasts: toasts, id: id, timeout: timeout)
+  Model(toasts: toasts, id: id, timeout: timeout, root: root)
 }
 
 pub fn add(
@@ -23,22 +24,23 @@ pub fn add(
   timeout timeout: Option(Int),
 ) {
   let timeout = option.unwrap(timeout, model.timeout)
-  let new_toast = toast.new(model.id, content, level, timeout)
+  let new_toast = toast.new(model.id, content, level, timeout, model.root)
   let new_toasts = [new_toast, ..model.toasts]
   let new_id = model.id + 1
-  Model(toasts: new_toasts, id: new_id, timeout: timeout)
+  Model(..model, toasts: new_toasts, id: new_id, timeout: timeout)
 }
 
 fn update_toast(model: Model, id: Int, updater: fn(Toast) -> Toast) {
-  let Model(toasts, current_id, options) = model
-  let new_toasts = {
-    use toast <- list.map(toasts)
-    case id == toast.id {
-      True -> updater(toast)
-      False -> toast
-    }
-  }
-  Model(new_toasts, current_id, options)
+  Model(
+    ..model,
+    toasts: {
+      use toast <- list.map(model.toasts)
+      case id == toast.id {
+        True -> updater(toast)
+        False -> toast
+      }
+    },
+  )
 }
 
 pub fn show(model: Model, id: Int) {
@@ -57,7 +59,7 @@ pub fn decrease_bottom(model: Model, id: Int) {
     use toast <- list.map(model.toasts)
     case toast.displayed, toast.id > id {
       True, True -> {
-        let bottom = ffi.compute_toast_size(id)
+        let bottom = ffi.compute_toast_size(id, model.root)
         let new_bottom = toast.bottom - bottom
         Toast(..toast, bottom: new_bottom)
       }
@@ -83,7 +85,6 @@ pub fn resume(model: Model, id: Int) {
 }
 
 pub fn remove(model: Model, id: Int) {
-  let Model(toasts, current_id, options) = model
-  let new_toasts = list.filter(toasts, fn(toast) { toast.id != id })
-  Model(new_toasts, current_id, options)
+  let new_toasts = list.filter(model.toasts, fn(toast) { toast.id != id })
+  Model(..model, toasts: new_toasts)
 }

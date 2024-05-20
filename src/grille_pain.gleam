@@ -45,7 +45,7 @@ pub fn setup(opts: Options) {
     |> result.unwrap(view)
 
   let dispatcher =
-    fn(_) { #(model.new(opts.timeout), effect.none()) }
+    fn(_) { #(model.new(shadow_root, opts.timeout), effect.none()) }
     |> lustre.application(update, render)
     |> wrapper()
     |> lustre.start(lustre_root, Nil)

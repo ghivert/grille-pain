@@ -19,7 +19,7 @@ import sketch
 import sketch/size.{px}
 
 pub fn view(model: Model) {
-  let Model(toasts, _, _) = model
+  let toasts = model.toasts
   element.keyed(html.div([attribute.class("grille-pain")], _), {
     use toast <- list.map(toasts)
     let id = int.to_string(toast.id)

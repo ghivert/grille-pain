@@ -21,7 +21,10 @@ pub fn is_dark_theme() -> Bool {
 }
 
 @external(javascript, "../../grille_pain.ffi.mjs", "computeToastSize")
-pub fn compute_toast_size(id: Int) -> Int
+pub fn compute_toast_size(id: Int, root: ShadowRoot) -> Int
 
 @external(javascript, "../../grille_pain.ffi.mjs", "addKeyframe")
 pub fn add_keyframe(root: ShadowRoot) -> Nil
+
+@external(javascript, "../../grille_pain.ffi.mjs", "computeBottomPosition")
+pub fn compute_bottom_position(root: ShadowRoot) -> Int

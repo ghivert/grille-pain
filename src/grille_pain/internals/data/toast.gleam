@@ -1,5 +1,7 @@
 import birl
+import grille_pain/internals/ffi
 import grille_pain/toast/level.{type Level}
+import plinth/browser/shadow.{type ShadowRoot}
 
 pub type Toast {
   Toast(
@@ -16,10 +18,13 @@ pub type Toast {
   )
 }
 
-@external(javascript, "../../../grille_pain.ffi.mjs", "computeBottomPosition")
-fn compute_bottom_position() -> Int
-
-pub fn new(id: Int, content: String, level: Level, animation_duration: Int) {
+pub fn new(
+  id: Int,
+  content: String,
+  level: Level,
+  animation_duration: Int,
+  root: ShadowRoot,
+) {
   Toast(
     id: id,
     content: content,
@@ -28,7 +33,7 @@ pub fn new(id: Int, content: String, level: Level, animation_duration: Int) {
     remaining: animation_duration,
     last_schedule: birl.now(),
     iteration: 0,
-    bottom: compute_bottom_position(),
+    bottom: ffi.compute_bottom_position(root),
     level: level,
     animation_duration: animation_duration,
   )
