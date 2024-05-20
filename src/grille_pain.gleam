@@ -1,3 +1,10 @@
+//// `grille_pain` provides a simili effect manager to display and manage your
+//// toasts. You should instanciate at most one grille-pain on your applications.
+////
+//// This package exposes two entrypoints: `simple` and `setup`. The first one
+//// should be appropriated for most use-cases. Reach for the next one if you
+//// really need to customise options.
+
 import gleam/dynamic
 import gleam/function
 import gleam/io
@@ -20,6 +27,9 @@ import sketch/lustre as sketch
 import sketch/options as sketch_options
 import tardis
 
+/// Setup a new `grille_pain` instance. You should not instanciate two instances
+/// on the page, as `grille_pain` expect to run as a singleton.
+/// Use `grille_pain/options` to provide and customise options.
 pub fn setup(opts: Options) {
   let node = document.create_element("grille-pain")
   let lustre_root_ = document.create_element("div")
@@ -55,6 +65,9 @@ pub fn setup(opts: Options) {
   |> result.map(ffi.store_dispatcher)
 }
 
+/// Setup a new `grille_pain` instance. You should not instanciate two instances
+/// on the page, as `grille_pain` expect to run as a singleton.
+/// Setup with default settings, meaning 5s of timeout.
 pub fn simple() {
   options.default()
   |> setup()

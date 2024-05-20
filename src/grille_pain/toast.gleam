@@ -1,21 +1,46 @@
+//// `grille_pain/toast` defines the different side-effects to use to display
+//// toasts. They should be used when your outside of lustre applications. Otherwise
+//// you should [head up to `grille_pain/lustre/toast`](/grille_pain/grille_pain/lustre/toast.html).
+
 import gleam/option.{type Option, None, Some}
 import grille_pain/internals/data/msg
 import grille_pain/internals/ffi
 import grille_pain/toast/level.{type Level}
 import lustre
 
+/// Options type allow to modify timeout or level at the notification level
+/// directly. This is used to create custom toasts and override defaults.
+/// If you don't need custom toasts, you should head up to default functions
+/// (`toast`, `info`, `success`, `error` and `warning`).
+///
+/// It follows the Builder pattern.
+///
+/// ```gleam
+/// import grille_pain/toast
+/// import grille_pain/toast/level
+///
+/// fn custom_toast() {
+///   toast.options()
+///   |> toast.timeout(millisecond1s: 30_000)
+///   |> toast.level(level.Warning)
+///   |> toast.custom("Oops")
+/// }
+/// ```
 pub opaque type Options {
   Options(timeout: Option(Int), level: Option(Level))
 }
 
+/// Default, empty options. Use it to start Builder.
 pub fn options() {
   Options(None, None)
 }
 
-pub fn timeout(options: Options, timeout: Int) {
+/// Timeout to override defaults. Accepts a timeout in milliseconds.
+pub fn timeout(options: Options, milliseconds timeout: Int) {
   Options(..options, timeout: Some(timeout))
 }
 
+/// Level of your toast.
 pub fn level(options: Options, level: Level) {
   Options(..options, level: Some(level))
 }
