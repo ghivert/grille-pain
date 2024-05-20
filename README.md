@@ -16,7 +16,8 @@ an independant component on the page. After setup, `grille_pain` registers a
 `<grille_pain>` node in the DOM, and instanciate a Shadow DOM, to make sure
 styles won't intervene with yours.
 
-This package is inspired by `react-toastify`, for colors and animations.
+This package is inspired by [`react-toastify`](https://github.com/fkhadra/react-toastify),
+for colors and animations.
 
 > [!WARN]
 > It's only working for JavaScript target as of now!
