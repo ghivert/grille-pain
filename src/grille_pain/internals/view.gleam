@@ -91,6 +91,7 @@ fn toast_class() {
     sketch.box_shadow("0px 4px 12px rgba(0, 0, 0, 0.1)"),
     // Animation
     sketch.overflow("hidden"),
+    sketch.cursor("pointer"),
   ])
   |> sketch.to_lustre()
 }
