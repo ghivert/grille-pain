@@ -2,10 +2,17 @@ import gleam/option.{type Option}
 import grille_pain/toast/level.{type Level}
 
 pub type Msg {
-  NewToast(String, Level, timeout: Option(Int))
-  ShowToast(Int, timeout: Option(Int))
-  HideToast(Int, Int)
-  RemoveToast(Int)
-  StopToast(Int)
-  ResumeToast(Int)
+  ExternalHide(uuid: String)
+  Hide(id: Int, iteration: Int)
+  New(
+    uuid: String,
+    message: String,
+    level: Level,
+    timeout: Option(Int),
+    sticky: Bool,
+  )
+  Remove(id: Int)
+  Resume(id: Int)
+  Show(id: Int, timeout: Option(Int), sticky: Bool)
+  Stop(id: Int)
 }

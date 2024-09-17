@@ -5,15 +5,13 @@
 //// should be appropriated for most use-cases. Reach for the next one if you
 //// really need to customise options.
 
-import gleam/dynamic
-import gleam/function
-import gleam/io
 import gleam/list
 import gleam/option
 import gleam/pair
 import gleam/result
+import grille_pain/error
 import grille_pain/internals/data/model.{type Model, Model}
-import grille_pain/internals/data/msg.{type Msg} as t
+import grille_pain/internals/data/msg.{type Msg}
 import grille_pain/internals/ffi
 import grille_pain/internals/lustre/schedule.{schedule}
 import grille_pain/internals/view.{view}
@@ -23,9 +21,8 @@ import lustre/effect
 import plinth/browser/document
 import plinth/browser/element
 import plinth/browser/shadow
+import sketch as s
 import sketch/lustre as sketch
-import sketch/options as sketch_options
-import tardis
 
 /// Setup a new `grille_pain` instance. You should not instanciate two instances
 /// on the page, as `grille_pain` expect to run as a singleton.
@@ -34,35 +31,26 @@ pub fn setup(opts: Options) {
   let node = document.create_element("grille-pain")
   let lustre_root_ = document.create_element("div")
   let shadow_root = shadow.attach_shadow(node, shadow.Open)
-  let lustre_root = dynamic.unsafe_coerce(dynamic.from(lustre_root_))
+  let lustre_root = ffi.coerce(lustre_root_)
   shadow.append_child(shadow_root, lustre_root_)
-  document.body()
-  |> element.append_child(node)
+  document.body() |> element.append_child(node)
   ffi.add_keyframe(shadow_root)
 
-  let #(wrapper, activate) =
-    opts.debug
-    |> option.map(tardis.application(_, "grille-pain"))
-    |> option.map(fn(d) { #(tardis.wrap(_, d), tardis.activate(_, d)) })
-    |> option.unwrap(#(function.identity, function.identity))
+  use view <- result.try({
+    let shadow = sketch.shadow(shadow_root)
+    s.cache(strategy: s.Ephemeral)
+    |> result.map_error(error.SketchError)
+    |> result.map(sketch.compose(shadow, view, _))
+  })
 
-  let render =
-    sketch_options.shadow(shadow_root)
-    |> sketch.setup()
-    |> result.map_error(io.debug)
-    |> result.map(sketch.compose(view, _))
-    |> result.unwrap(view)
-
-  let dispatcher =
+  use dispatcher <- result.map({
     fn(_) { #(model.new(shadow_root, opts.timeout), effect.none()) }
-    |> lustre.application(update, render)
-    |> wrapper()
+    |> lustre.application(update, view)
     |> lustre.start(lustre_root, Nil)
-    |> activate()
+    |> result.map_error(error.LustreError)
+  })
 
-  dispatcher
-  |> result.map_error(io.debug)
-  |> result.map(ffi.store_dispatcher)
+  ffi.store_dispatcher(dispatcher)
 }
 
 /// Setup a new `grille_pain` instance. You should not instanciate two instances
@@ -75,42 +63,58 @@ pub fn simple() {
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    t.RemoveToast(id) -> #(model.remove(model, id), effect.none())
-    t.StopToast(id) -> #(model.stop(model, id), effect.none())
+    msg.Remove(id) -> #(model.remove(model, id), effect.none())
+    msg.Stop(id) -> #(model.stop(model, id), effect.none())
 
-    t.ShowToast(id, timeout) -> {
+    msg.Show(id:, timeout:, sticky:) -> {
       let time = option.unwrap(timeout, model.timeout)
       let new_model = model.show(model, id)
-      let eff = schedule(time, t.HideToast(id, 0))
+      let eff = case sticky {
+        True -> effect.none()
+        False -> schedule(time, msg.Hide(id, 0))
+      }
       #(new_model, eff)
     }
 
-    t.HideToast(id, iteration) ->
+    msg.ExternalHide(uuid:) ->
+      model.toasts
+      |> list.find(fn(toast) { toast.external_id == uuid })
+      |> result.map(fn(toast) {
+        schedule(1000, msg.Hide(toast.id, toast.iteration))
+      })
+      |> result.map(pair.new(model, _))
+      |> result.unwrap(#(model, effect.none()))
+
+    msg.Hide(id, iteration) ->
       model.toasts
       |> list.find(fn(toast) { toast.id == id && toast.iteration == iteration })
       |> result.map(fn(toast) {
         model
         |> model.hide(toast.id)
         |> model.decrease_bottom(toast.id)
-        |> pair.new(schedule(1000, t.RemoveToast(id)))
+        |> pair.new(schedule(1000, msg.Remove(id)))
       })
       |> result.unwrap(#(model, effect.none()))
 
-    t.ResumeToast(id) -> {
+    msg.Resume(id) -> {
       let new_model = model.resume(model, id)
       model.toasts
       |> list.find(fn(toast) { toast.id == id })
       |> result.map(fn(t) {
-        schedule(t.remaining, t.HideToast(id, t.iteration))
+        case t.sticky {
+          True -> effect.none()
+          False -> schedule(t.remaining, msg.Hide(id, t.iteration))
+        }
       })
       |> result.map(fn(eff) { #(new_model, eff) })
       |> result.unwrap(#(new_model, effect.none()))
     }
 
-    t.NewToast(content, level, timeout) -> {
+    msg.New(uuid:, message:, level:, timeout:, sticky:) -> {
       let old_id = model.id
-      let new_model = model.add(model, content, level, timeout)
-      #(new_model, schedule(100, t.ShowToast(old_id, timeout)))
+      let new_model =
+        model.add(uuid:, model:, message:, level:, timeout:, sticky:)
+      #(new_model, schedule(100, msg.Show(old_id, timeout, sticky:)))
     }
   }
 }

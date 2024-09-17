@@ -1,13 +1,13 @@
 let storeDispatcher_ = null
 
 export function storeDispatcher(dispatcher) {
-  if (storeDispatcher_ !== null) throw new Error("You should not instanciate two grille_pain instance")
+  if (storeDispatcher_ !== null) throw new Error('You should not instanciate two grille_pain instance')
   storeDispatcher_ = dispatcher
   return dispatcher
 }
 
 export function getDispatcher() {
-  if (storeDispatcher_ === null) throw new Error("You should instanciate grille_pain")
+  if (storeDispatcher_ === null) throw new Error('You should instanciate grille_pain')
   return storeDispatcher_
 }
 
@@ -21,15 +21,14 @@ export function computeBottomPosition(root) {
   return nodes.reduce((acc, node) => {
     if (node.classList.contains('grille_pain-toast-hidden')) return acc
     const dimensions = node.getBoundingClientRect()
-    return acc + dimensions.height - 12;
+    return acc + dimensions.height - 12
   }, 0)
 }
 
 export function computeToastSize(id, root) {
   const node = root.querySelectorAll(`.grille_pain-toast-${id}`)
   if (node && node[0]) {
-    if (node[0].classList.contains('grille_pain-toast-visible'))
-      return node[0].getBoundingClientRect().height - 12
+    if (node[0].classList.contains('grille_pain-toast-visible')) return node[0].getBoundingClientRect().height - 12
   }
   return 0
 }
@@ -46,4 +45,16 @@ export function addKeyframe(shadowRoot) {
   }
 }`)
   shadowRoot.adoptedStyleSheets.push(stylesheet)
+}
+
+export function uuid() {
+  return crypto.randomUUID()
+}
+
+export function setTimeout(timeout, fn) {
+  window.setTimeout(fn, timeout)
+}
+
+export function coerce(value) {
+  return value
 }

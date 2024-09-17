@@ -1,33 +1,29 @@
-import gleam/function
 import gleam/int
-import gleam/string
 import grille_pain/internals/data/toast.{type Toast}
 import grille_pain/internals/view/colors
 import grille_pain/toast/level.{type Level}
-import lustre/element/html
 import sketch
+import sketch/lustre/element/html
 import sketch/size.{px}
 
 pub fn view(toast: Toast) {
-  function.flip(html.div)([], [
-    pb_play_state(toast.running),
-    pb_background_color(toast.level),
-    pb_animation(toast.animation_duration),
-    pb_base(),
+  sketch.class([
+    sketch.compose(pb_play_state(toast.running)),
+    sketch.compose(pb_background_color(toast.level)),
+    sketch.compose(pb_animation(toast.animation_duration)),
+    sketch.compose(pb_base()),
   ])
+  |> html.div([], [])
 }
 
 fn pb_base() {
-  [sketch.animation_fill_mode("forwards"), sketch.height(px(5))]
-  |> sketch.class()
-  |> sketch.to_lustre()
+  sketch.class([sketch.animation_fill_mode("forwards"), sketch.height(px(5))])
 }
 
 fn pb_animation(duration: Int) {
-  let duration_ = int.to_string(duration / 1000)
-  [sketch.animation(duration_ <> "s linear 0s progress_bar")]
-  |> sketch.dynamic("toast-duration-" <> duration_, _)
-  |> sketch.to_lustre()
+  let duration = int.to_string(duration / 1000)
+  let animation = duration <> "s linear 0s progress_bar"
+  sketch.class([sketch.animation(animation)])
 }
 
 fn pb_background_color(level: Level) {
@@ -35,14 +31,10 @@ fn pb_background_color(level: Level) {
   let level = level.to_string(level)
   let background =
     "var(--grille_pain-" <> level <> "-progress-bar, " <> back_color <> ")"
-  string.join(["grille_pain", "pb", "background", back_color], "-")
-  |> sketch.dynamic([sketch.background(background)])
-  |> sketch.to_lustre()
+  sketch.class([sketch.background(background)])
 }
 
 fn pb_play_state(running: Bool) {
   let running_str = toast.running_to_string(running)
-  string.join(["grille_pain", "pb", "play-state", running_str], "-")
-  |> sketch.dynamic([sketch.animation_play_state(running_str)])
-  |> sketch.to_lustre()
+  sketch.class([sketch.animation_play_state(running_str)])
 }

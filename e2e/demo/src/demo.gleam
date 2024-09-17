@@ -9,10 +9,10 @@ import layout
 import lustre
 import lustre/attribute
 import lustre/effect
-import lustre/element/html
 import lustre/event
+import sketch
 import sketch/lustre as sketch_lustre
-import sketch/options as sketch_options
+import sketch/lustre/element/html
 
 pub const base_content = " toast! Click it to hide, or try to display many toasts at once!"
 
@@ -29,13 +29,10 @@ pub fn main() {
   let init = fn(_) { #(0, effect.none()) }
 
   let assert Ok(_) = grille_pain.simple()
-  let assert Ok(cache) =
-    sketch_options.node()
-    |> sketch_lustre.setup()
-
+  let assert Ok(cache) = sketch.cache(strategy: sketch.Ephemeral)
   let assert Ok(_) =
     view
-    |> sketch_lustre.compose(cache)
+    |> sketch_lustre.compose(sketch_lustre.node(), _, cache)
     |> lustre.application(init, update, _)
     |> lustre.start("#app", Nil)
 }
@@ -118,11 +115,11 @@ fn custom_toasts(model: Model) {
         "Here, you can choose the duration for the toast to be displayed! You can choose different settings, and run the different toasts with individual settings.",
       ),
     ]),
-    html.div([], [
+    html.div_([], [
       html.text("Timeout (in seconds): "),
       html.text(int.to_string(model)),
     ]),
-    html.input([
+    html.input_([
       attribute.value(int.to_string(model)),
       attribute.type_("range"),
       event.on_input(fn(value) {

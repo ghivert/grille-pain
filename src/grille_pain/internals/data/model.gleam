@@ -19,33 +19,42 @@ pub fn new(root: ShadowRoot, timeout: Int) {
 
 pub fn add(
   model model: Model,
-  message content: String,
+  uuid external_id: String,
+  message message: String,
   level level: Level,
+  sticky sticky: Bool,
   timeout timeout: Option(Int),
 ) {
   let timeout = option.unwrap(timeout, model.timeout)
-  let new_toast = toast.new(model.id, content, level, timeout, model.root)
+  let new_toast =
+    toast.new(
+      external_id:,
+      id: model.id,
+      message:,
+      level:,
+      animation_duration: timeout,
+      root: model.root,
+      sticky:,
+    )
   let new_toasts = [new_toast, ..model.toasts]
   let new_id = model.id + 1
   Model(..model, toasts: new_toasts, id: new_id)
 }
 
 fn update_toast(model: Model, id: Int, updater: fn(Toast) -> Toast) {
-  Model(
-    ..model,
-    toasts: {
-      use toast <- list.map(model.toasts)
-      case id == toast.id {
-        True -> updater(toast)
-        False -> toast
-      }
-    },
-  )
+  let toasts = {
+    use toast <- list.map(model.toasts)
+    case id == toast.id {
+      True -> updater(toast)
+      False -> toast
+    }
+  }
+  Model(..model, toasts:)
 }
 
 pub fn show(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.now()
+  let now = birl.utc_now()
   Toast(..toast, displayed: True, running: True, last_schedule: now)
 }
 
@@ -71,7 +80,7 @@ pub fn decrease_bottom(model: Model, id: Int) {
 
 pub fn stop(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.now()
+  let now = birl.utc_now()
   let Duration(elapsed_time) = birl.difference(now, toast.last_schedule)
   let remaining = toast.remaining - elapsed_time / 1000
   let i = toast.iteration + 1
@@ -80,7 +89,7 @@ pub fn stop(model: Model, id: Int) {
 
 pub fn resume(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.now()
+  let now = birl.utc_now()
   Toast(..toast, running: True, last_schedule: now)
 }
 

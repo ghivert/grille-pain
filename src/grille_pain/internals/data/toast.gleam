@@ -5,8 +5,10 @@ import plinth/browser/shadow.{type ShadowRoot}
 
 pub type Toast {
   Toast(
+    external_id: String,
     id: Int,
-    content: String,
+    sticky: Bool,
+    message: String,
     displayed: Bool,
     running: Bool,
     remaining: Int,
@@ -19,23 +21,27 @@ pub type Toast {
 }
 
 pub fn new(
-  id: Int,
-  content: String,
-  level: Level,
-  animation_duration: Int,
-  root: ShadowRoot,
+  external_id external_id: String,
+  id id: Int,
+  message message: String,
+  level level: Level,
+  animation_duration remaining: Int,
+  sticky sticky: Bool,
+  root root: ShadowRoot,
 ) {
   Toast(
-    id: id,
-    content: content,
+    external_id:,
+    id:,
+    message:,
+    sticky:,
     displayed: False,
     running: False,
-    remaining: animation_duration,
-    last_schedule: birl.now(),
+    remaining:,
+    last_schedule: birl.utc_now(),
     iteration: 0,
     bottom: ffi.compute_bottom_position(root),
-    level: level,
-    animation_duration: animation_duration,
+    level:,
+    animation_duration: remaining,
   )
 }
 

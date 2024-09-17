@@ -1,5 +1,5 @@
 import sketch as s
-import sketch/lustre/extra as l
+import sketch/lustre/element/html
 import sketch/size.{px, vh}
 
 pub type Palette {
@@ -33,11 +33,11 @@ pub const palette = Palette(
 )
 
 pub fn body(attributes, children) {
-  l.element("div", attributes, children, [
+  let font_family =
+    "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif"
+  s.class([
     s.color(palette.black),
-    s.font_family(
-      "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif",
-    ),
+    s.font_family(font_family),
     s.min_height(vh(100)),
     s.margin(px(-10)),
     s.background(palette.aged_plastic_yellow),
@@ -45,10 +45,11 @@ pub fn body(attributes, children) {
     s.flex_direction("column"),
     s.justify_content("center"),
   ])
+  |> html.div(attributes, children)
 }
 
 pub fn main(attributes, children) {
-  l.element("main", attributes, children, [
+  s.class([
     s.padding(px(24)),
     s.max_width(px(700)),
     s.margin_("0 auto"),
@@ -56,49 +57,41 @@ pub fn main(attributes, children) {
     s.flex_direction("column"),
     s.gap(px(48)),
   ])
+  |> html.main(attributes, children)
 }
 
 pub fn lucy(attributes) {
-  l.element("img", attributes, [], [s.width(px(60))])
+  s.class([s.width(px(60))])
+  |> html.img(attributes)
 }
 
 pub fn header_wrapper(attributes, children) {
-  l.element("div", attributes, children, [
-    s.display("flex"),
-    s.gap(px(12)),
-    s.align_items("center"),
-  ])
+  s.class([s.display("flex"), s.gap(px(12)), s.align_items("center")])
+  |> html.div(attributes, children)
 }
 
 pub fn title_wrapper(attributes, children) {
-  l.element("div", attributes, children, [
-    s.display("flex"),
-    s.flex_direction("column"),
-    s.gap(px(6)),
-  ])
+  s.class([s.display("flex"), s.flex_direction("column"), s.gap(px(6))])
+  |> html.div(attributes, children)
 }
 
 pub fn title(attributes, children) {
-  l.element("div", attributes, children, [
-    s.font_weight("600"),
-    s.font_size(px(24)),
-  ])
+  s.class([s.font_weight("600"), s.font_size(px(24))])
+  |> html.div(attributes, children)
 }
 
 pub fn subtitle(attributes, children) {
-  l.element("div", attributes, children, [
-    s.font_weight("500"),
-    s.color(palette.underwater_blue),
-  ])
+  s.class([s.font_weight("500"), s.color(palette.underwater_blue)])
+  |> html.div(attributes, children)
 }
 
 pub fn actions_wrapper(attributes, children) {
-  l.element("div", attributes, children, [s.display("flex"), s.gap(px(12))])
+  s.class([s.display("flex"), s.gap(px(12))])
+  |> html.div(attributes, children)
 }
 
 pub fn toast_button(background, color, attributes, children) {
-  let id = "button-" <> background
-  l.dynamic("button", attributes, children, id, [
+  s.class([
     s.font_family("inherit"),
     s.cursor("pointer"),
     s.appearance("none"),
@@ -113,16 +106,14 @@ pub fn toast_button(background, color, attributes, children) {
     s.transition(".3s box-shadow"),
     s.active([s.box_shadow("inset 2px 2px 5px 1px #aaa")]),
   ])
+  |> html.button(attributes, children)
 }
 
 pub fn section(attributes, children) {
-  l.element("section", attributes, children, [
-    s.display("flex"),
-    s.flex_direction("column"),
-    s.gap(px(12)),
-  ])
+  s.class([s.display("flex"), s.flex_direction("column"), s.gap(px(12))])
+  |> html.section(attributes, children)
 }
 
 pub fn section_description(attributes, children) {
-  l.element("div", attributes, children, [])
+  html.div_(attributes, children)
 }

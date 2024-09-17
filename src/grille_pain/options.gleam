@@ -16,21 +16,13 @@
 //// }
 //// ```
 
-import gleam/option.{type Option, None, Some}
-import tardis
-
 pub type Options {
-  Options(timeout: Int, debug: Option(tardis.Tardis))
+  Options(timeout: Int)
 }
 
 /// Default options, 5s seconds of timeout.
 pub fn default() -> Options {
-  Options(timeout: 5000, debug: None)
-}
-
-@internal
-pub fn debug(options, debug) {
-  Options(..options, debug: Some(debug))
+  Options(timeout: 5000)
 }
 
 /// Define default timeout for toasts. Must be set in milliseconds.

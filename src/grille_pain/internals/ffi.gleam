@@ -21,10 +21,25 @@ pub fn is_dark_theme() -> Bool {
 }
 
 @external(javascript, "../../grille_pain.ffi.mjs", "computeToastSize")
-pub fn compute_toast_size(id: Int, root: ShadowRoot) -> Int
+pub fn compute_toast_size(id: Int, root: ShadowRoot) -> Int {
+  0
+}
 
 @external(javascript, "../../grille_pain.ffi.mjs", "addKeyframe")
-pub fn add_keyframe(root: ShadowRoot) -> Nil
+pub fn add_keyframe(root: ShadowRoot) -> Nil {
+  Nil
+}
 
 @external(javascript, "../../grille_pain.ffi.mjs", "computeBottomPosition")
-pub fn compute_bottom_position(root: ShadowRoot) -> Int
+pub fn compute_bottom_position(root: ShadowRoot) -> Int {
+  0
+}
+
+@external(javascript, "../../grille_pain.ffi.mjs", "setTimeout")
+pub fn set_timeout(timeout: Int, callback: fn() -> Nil) -> Nil {
+  Nil
+}
+
+@external(erlang, "grille_pain_ffi", "coerce")
+@external(javascript, "../../grille_pain.ffi.mjs", "coerce")
+pub fn coerce(a: a) -> b

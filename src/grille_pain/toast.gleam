@@ -8,6 +8,9 @@ import grille_pain/internals/ffi
 import grille_pain/toast/level.{type Level}
 import lustre
 
+@external(javascript, "../grille_pain.ffi.mjs", "uuid")
+fn uuid() -> String
+
 /// Options type allow to modify timeout or level at the notification level
 /// directly. This is used to create custom toasts and override defaults.
 /// If you don't need custom toasts, you should head up to default functions
@@ -21,18 +24,18 @@ import lustre
 ///
 /// fn custom_toast() {
 ///   toast.options()
-///   |> toast.timeout(millisecond1s: 30_000)
+///   |> toast.timeout(milliseconds: 30_000)
 ///   |> toast.level(level.Warning)
 ///   |> toast.custom("Oops")
 /// }
 /// ```
 pub opaque type Options {
-  Options(timeout: Option(Int), level: Option(Level))
+  Options(timeout: Option(Int), level: Option(Level), sticky: Bool)
 }
 
 /// Default, empty options. Use it to start Builder.
 pub fn options() {
-  Options(None, None)
+  Options(timeout: None, level: None, sticky: False)
 }
 
 /// Timeout to override defaults. Accepts a timeout in milliseconds.
@@ -40,18 +43,24 @@ pub fn timeout(options: Options, milliseconds timeout: Int) {
   Options(..options, timeout: Some(timeout))
 }
 
+pub fn sticky(options: Options) {
+  Options(..options, sticky: True)
+}
+
 /// Level of your toast.
 pub fn level(options: Options, level: Level) {
   Options(..options, level: Some(level))
 }
 
-fn dispatch_toast(options: Options, content: String) {
+fn dispatch_toast(options: Options, message: String) {
   let grille_pain_dispatch = ffi.dispatcher()
-  let level = option.unwrap(options.level, level.Standard)
-  let timeout = options.timeout
-  msg.NewToast(content, level, timeout)
+  let Options(timeout:, level:, sticky:) = options
+  let level = option.unwrap(level, level.Standard)
+  let uuid = uuid()
+  msg.New(uuid:, message:, level:, timeout:, sticky:)
   |> lustre.dispatch()
   |> grille_pain_dispatch()
+  uuid
 }
 
 pub fn info(content: String) {
@@ -86,4 +95,11 @@ pub fn warning(content: String) {
 
 pub fn custom(options: Options, content: String) {
   dispatch_toast(options, content)
+}
+
+pub fn hide(id: String) {
+  let grille_pain_dispatch = ffi.dispatcher()
+  msg.ExternalHide(id)
+  |> lustre.dispatch()
+  |> grille_pain_dispatch()
 }
