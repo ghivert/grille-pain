@@ -90,6 +90,13 @@ side-effectful.
 Displaying a toast is as simple as `toast.toast("Content")`, or you can build
 your custom toast. [The documentation is hosted on hex](https://hexdocs.pm/grille_pain).
 
+## Sticky toasts
+
+Displaying toasts are cool, but sometimes you need to display a toast that is
+always visible. `grille_pain` got you covered! Simply set `sticky` in your toast
+options, and your toast will be sticky! What if you want to hide it? `notify` will
+help you get the ID of the toast, and `hide` will hide the toast properly!
+
 ## Styling
 
 Toasts are styled by default, except for fonts. To define a font that suits you,
