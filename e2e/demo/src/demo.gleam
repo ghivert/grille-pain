@@ -17,6 +17,8 @@ import sketch/lustre/element/html
 
 pub const base_content = " toast! Click it to hide, or try to display many toasts at once!"
 
+pub const base_sticky = " toast! It will stick here until you hide it."
+
 pub type Model {
   Model(timeout: Int, stickys: List(String))
 }
@@ -49,7 +51,7 @@ fn update(model: Model, msg: Msg) {
       toast.options()
       |> toast.timeout(model.timeout * 1000)
       |> toast.level(level)
-      |> toast.custom(content)
+      |> toast.custom(content <> base_content)
       |> pair.new(model, _)
     }
     DisplayStickyToast(level) -> {
@@ -58,7 +60,7 @@ fn update(model: Model, msg: Msg) {
       |> toast.sticky
       |> toast.level(level)
       |> toast.notify(UpdateStickyToastId)
-      |> toast.custom(content)
+      |> toast.custom(content <> base_sticky)
       |> pair.new(model, _)
     }
     HideStickyToasts -> {
@@ -91,6 +93,7 @@ fn header() {
 
 fn simple_toasts() {
   layout.section([], [
+    layout.section_title([], [html.text("Simple toasts")]),
     layout.section_description([], [
       html.text(
         "You can use grille_pain in an easy way, with some defaults! Clicking on one of those buttons will display a toast, without any further configuration! Try it directly!",
@@ -133,9 +136,10 @@ fn simple_toasts() {
 
 fn custom_toasts(model: Model) {
   layout.section([], [
+    layout.section_title([], [html.text("Custom toasts")]),
     layout.section_description([], [
       html.text(
-        "Here, you can choose the duration for the toast to be displayed! You can choose different settings, and run the different toasts with individual settings.",
+        "Choose the duration for the toast to be displayed! You can choose different settings, and run the different toasts with individual settings.",
       ),
     ]),
     html.div_([], [
@@ -188,6 +192,7 @@ fn custom_toasts(model: Model) {
 
 fn sticky_toasts() {
   layout.section([], [
+    layout.section_title([], [html.text("Sticky toasts")]),
     layout.section_description([], [
       html.text(
         "Here, you can choose the duration for the toast to be displayed! You can choose different settings, and run the different toasts with individual settings.",
@@ -225,12 +230,15 @@ fn sticky_toasts() {
         [html.text("Error")],
       ),
     ]),
-    layout.toast_button(
-      colors.error,
-      layout.palette.white,
-      [event.on_click(HideStickyToasts)],
-      [html.text("Hide sticky toasts")],
-    ),
+    html.br_([]),
+    layout.actions_wrapper([], [
+      layout.toast_button(
+        colors.error,
+        layout.palette.white,
+        [event.on_click(HideStickyToasts)],
+        [html.text("Hide sticky toasts")],
+      ),
+    ]),
   ])
 }
 

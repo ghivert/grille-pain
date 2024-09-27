@@ -7,6 +7,9 @@
 //// using the pipe operator. The type is public though, meaning you can build it
 //// as you prefer.
 ////
+//// While there's nothing apart `timeout` currently, `Options` is made to be
+//// extensible in an easy way.
+////
 //// ```gleam
 //// import grille_pain/options
 ////
@@ -26,6 +29,6 @@ pub fn default() -> Options {
 }
 
 /// Define default timeout for toasts. Must be set in milliseconds.
-pub fn timeout(options: Options, milliseconds timeout: Int) -> Options {
-  Options(..options, timeout: timeout)
+pub fn timeout(_options: Options, milliseconds timeout: Int) -> Options {
+  Options(timeout: timeout)
 }

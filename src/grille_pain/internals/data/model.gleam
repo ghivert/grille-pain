@@ -69,8 +69,8 @@ pub fn decrease_bottom(model: Model, id: Int) {
     case toast.displayed, toast.id > id {
       True, True -> {
         let bottom = ffi.compute_toast_size(id, model.root)
-        let new_bottom = toast.bottom - bottom
-        Toast(..toast, bottom: new_bottom)
+        let bottom = toast.bottom - bottom
+        Toast(..toast, bottom:)
       }
       _, _ -> toast
     }
@@ -83,8 +83,8 @@ pub fn stop(model: Model, id: Int) {
   let now = birl.utc_now()
   let Duration(elapsed_time) = birl.difference(now, toast.last_schedule)
   let remaining = toast.remaining - elapsed_time / 1000
-  let i = toast.iteration + 1
-  Toast(..toast, running: False, remaining: remaining, iteration: i)
+  let iteration = toast.iteration + 1
+  Toast(..toast, running: False, remaining:, iteration:)
 }
 
 pub fn resume(model: Model, id: Int) {

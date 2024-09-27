@@ -5,6 +5,7 @@
 //// should be appropriated for most use-cases. Reach for the next one if you
 //// really need to customise options.
 
+import gleam/bool
 import gleam/list
 import gleam/option
 import gleam/pair
@@ -12,6 +13,7 @@ import gleam/result
 import grille_pain/error
 import grille_pain/internals/data/model.{type Model, Model}
 import grille_pain/internals/data/msg.{type Msg}
+import grille_pain/internals/data/toast
 import grille_pain/internals/ffi
 import grille_pain/internals/lustre/schedule.{schedule}
 import grille_pain/internals/view.{view}
@@ -63,58 +65,55 @@ pub fn simple() {
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    msg.Remove(id) -> #(model.remove(model, id), effect.none())
-    msg.Stop(id) -> #(model.stop(model, id), effect.none())
-
-    msg.Show(id:, timeout:, sticky:) -> {
-      let time = option.unwrap(timeout, model.timeout)
-      let new_model = model.show(model, id)
-      let eff = case sticky {
-        True -> effect.none()
-        False -> schedule(time, msg.Hide(id, 0))
-      }
-      #(new_model, eff)
-    }
-
-    msg.ExternalHide(uuid:) ->
-      model.toasts
-      |> list.find(fn(toast) { toast.external_id == uuid })
-      |> result.map(fn(toast) {
-        schedule(1000, msg.Hide(toast.id, toast.iteration))
-      })
-      |> result.map(pair.new(model, _))
-      |> result.unwrap(#(model, effect.none()))
-
-    msg.Hide(id, iteration) ->
-      model.toasts
-      |> list.find(fn(toast) { toast.id == id && toast.iteration == iteration })
-      |> result.map(fn(toast) {
-        model
-        |> model.hide(toast.id)
-        |> model.decrease_bottom(toast.id)
-        |> pair.new(schedule(1000, msg.Remove(id)))
-      })
-      |> result.unwrap(#(model, effect.none()))
-
-    msg.Resume(id) -> {
-      let new_model = model.resume(model, id)
-      model.toasts
-      |> list.find(fn(toast) { toast.id == id })
-      |> result.map(fn(t) {
-        case t.sticky {
-          True -> effect.none()
-          False -> schedule(t.remaining, msg.Hide(id, t.iteration))
-        }
-      })
-      |> result.map(fn(eff) { #(new_model, eff) })
-      |> result.unwrap(#(new_model, effect.none()))
-    }
-
-    msg.New(uuid:, message:, level:, timeout:, sticky:) -> {
-      let old_id = model.id
-      let new_model =
-        model.add(uuid:, model:, message:, level:, timeout:, sticky:)
-      #(new_model, schedule(100, msg.Show(old_id, timeout, sticky:)))
-    }
+    msg.Remove(id) -> Ok(#(model.remove(model, id), effect.none()))
+    msg.Stop(id) -> Ok(#(model.stop(model, id), effect.none()))
+    msg.Show(..) -> show(model, msg)
+    msg.ExternalHide(uuid:) -> external_hide(model, uuid)
+    msg.Hide(id, iteration) -> hide(model, id, iteration)
+    msg.Resume(id) -> resume(model, id)
+    msg.New(..) -> new(model, msg)
   }
+  |> result.unwrap(#(model, effect.none()))
+}
+
+fn show(model: Model, msg: msg.Msg) {
+  let assert msg.Show(id:, timeout:, sticky:) = msg
+  let time = option.unwrap(timeout, model.timeout)
+  let new_model = model.show(model, id)
+  let eff = schedule_hide(sticky, time, id, 0)
+  Ok(#(new_model, eff))
+}
+
+fn external_hide(model: Model, uuid: String) {
+  let toast = model.toasts |> list.find(toast.by_uuid(_, uuid))
+  use toast <- result.map(toast)
+  #(model, schedule(1000, msg.Hide(toast.id, toast.iteration)))
+}
+
+fn hide(model: Model, id: Int, iteration: Int) {
+  let toast = model.toasts |> list.find(toast.by_iteration(_, id, iteration))
+  use toast <- result.map(toast)
+  model
+  |> model.hide(toast.id)
+  |> model.decrease_bottom(toast.id)
+  |> pair.new(schedule(1000, msg.Remove(id)))
+}
+
+fn resume(model: Model, id: Int) {
+  let new_model = model.resume(model, id)
+  let toast = model.toasts |> list.find(toast.by_id(_, id))
+  use toast.Toast(sticky:, remaining:, iteration:, ..) <- result.map(toast)
+  #(new_model, schedule_hide(sticky, remaining, id, iteration))
+}
+
+fn new(model: Model, msg: Msg) {
+  let assert msg.New(uuid:, message:, level:, timeout:, sticky:) = msg
+  let old_id = model.id
+  let new_model = model.add(uuid:, model:, message:, level:, timeout:, sticky:)
+  Ok(#(new_model, schedule(100, msg.Show(old_id, timeout, sticky:))))
+}
+
+fn schedule_hide(sticky, timeout, id, iteration) {
+  use <- bool.lazy_guard(when: sticky, return: effect.none)
+  schedule(timeout, msg.Hide(id, iteration))
 }

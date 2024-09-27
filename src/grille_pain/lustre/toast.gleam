@@ -49,6 +49,8 @@ pub fn timeout(options: Options(msg), milliseconds timeout: Int) {
   Options(..options, timeout: option.Some(timeout))
 }
 
+/// Activate stickiness for toast. A sticky toast will never go away while it's
+/// not hidden manually.
 pub fn sticky(options: Options(msg)) {
   Options(..options, sticky: True)
 }
@@ -127,6 +129,7 @@ pub fn custom(options: Options(msg), content: String) {
   }
 }
 
+/// Hide toast. Sticky toast can only be hidden using `hide`.
 pub fn hide(id: String) {
   use _ <- effect.from()
   toast.hide(id)

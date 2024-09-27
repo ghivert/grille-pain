@@ -43,6 +43,8 @@ pub fn timeout(options: Options, milliseconds timeout: Int) {
   Options(..options, timeout: Some(timeout))
 }
 
+/// Activate stickiness for toasts. A sticky toast will never go away while it's
+/// not hidden manually.
 pub fn sticky(options: Options) {
   Options(..options, sticky: True)
 }
@@ -97,6 +99,7 @@ pub fn custom(options: Options, content: String) {
   dispatch_toast(options, content)
 }
 
+/// Hide toast. Sticky toast can only be hidden using `hide`.
 pub fn hide(id: String) {
   let grille_pain_dispatch = ffi.dispatcher()
   msg.ExternalHide(id)

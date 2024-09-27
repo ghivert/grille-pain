@@ -1,4 +1,5 @@
 import gleam/int
+import grille_pain/internals/css
 import grille_pain/internals/data/toast.{type Toast}
 import grille_pain/internals/view/colors
 import grille_pain/toast/level.{type Level}
@@ -8,10 +9,10 @@ import sketch/size.{px}
 
 pub fn view(toast: Toast) {
   sketch.class([
-    sketch.compose(pb_play_state(toast.running)),
+    sketch.compose(pb_base()),
     sketch.compose(pb_background_color(toast.level)),
     sketch.compose(pb_animation(toast.animation_duration)),
-    sketch.compose(pb_base()),
+    sketch.compose(pb_play_state(toast.running)),
   ])
   |> html.div([], [])
 }
@@ -29,12 +30,12 @@ fn pb_animation(duration: Int) {
 fn pb_background_color(level: Level) {
   let back_color = colors.progress_bar_from_level(level)
   let level = level.to_string(level)
-  let background =
-    "var(--grille_pain-" <> level <> "-progress-bar, " <> back_color <> ")"
+  let var = "grille_pain-" <> level <> "-progress-bar"
+  let background = css.var(var, back_color)
   sketch.class([sketch.background(background)])
 }
 
 fn pb_play_state(running: Bool) {
   let running_str = toast.running_to_string(running)
-  sketch.class([sketch.animation_play_state(running_str)])
+  sketch.class([sketch.animation_play_state(running_str) |> sketch.important])
 }

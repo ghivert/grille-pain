@@ -51,3 +51,15 @@ pub fn running_to_string(running: Bool) {
     False -> "paused"
   }
 }
+
+pub fn by_uuid(toast: Toast, uuid: String) {
+  toast.external_id == uuid
+}
+
+pub fn by_id(toast: Toast, id: Int) {
+  toast.id == id
+}
+
+pub fn by_iteration(toast: Toast, id: Int, iteration: Int) {
+  toast.id == id && toast.iteration == iteration
+}

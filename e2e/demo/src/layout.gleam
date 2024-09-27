@@ -112,6 +112,11 @@ pub fn section(attributes, children) {
   |> html.section(attributes, children)
 }
 
+pub fn section_title(attributes, children) {
+  s.class([s.font_size(size.rem(1.05)), s.font_weight("600")])
+  |> html.h2(attributes, children)
+}
+
 pub fn section_description(attributes, children) {
   html.div_(attributes, children)
 }
