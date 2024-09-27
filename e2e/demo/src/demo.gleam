@@ -1,4 +1,5 @@
 import gleam/int
+import gleam/list
 import gleam/pair
 import gleam/result
 import grille_pain
@@ -16,18 +17,21 @@ import sketch/lustre/element/html
 
 pub const base_content = " toast! Click it to hide, or try to display many toasts at once!"
 
-pub type Model =
-  Int
+pub type Model {
+  Model(timeout: Int, stickys: List(String))
+}
 
 pub type Msg {
-  DisplayBasicToast(String, fn(String) -> effect.Effect(Msg))
-  DisplayCustomToast(level.Level)
-  UpdateModel(Int)
+  DisplayBasicToast(content: String, toast: fn(String) -> effect.Effect(Msg))
+  DisplayCustomToast(level: level.Level)
+  DisplayStickyToast(level: level.Level)
+  HideStickyToasts
+  UpdateStickyToastId(id: String)
+  UpdateTimeout(timeout: Int)
 }
 
 pub fn main() {
-  let init = fn(_) { #(0, effect.none()) }
-
+  let init = fn(_) { #(Model(timeout: 0, stickys: []), effect.none()) }
   let assert Ok(_) = grille_pain.simple()
   let assert Ok(cache) = sketch.cache(strategy: sketch.Ephemeral)
   let assert Ok(_) =
@@ -39,16 +43,35 @@ pub fn main() {
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    UpdateModel(value) -> #(value, effect.none())
     DisplayBasicToast(content, toast) -> #(model, toast(content))
     DisplayCustomToast(level) -> {
       let content = level.to_string(level)
       toast.options()
-      |> toast.timeout(model * 1000)
+      |> toast.timeout(model.timeout * 1000)
       |> toast.level(level)
       |> toast.custom(content)
       |> pair.new(model, _)
     }
+    DisplayStickyToast(level) -> {
+      let content = level.to_string(level)
+      toast.options()
+      |> toast.sticky
+      |> toast.level(level)
+      |> toast.notify(UpdateStickyToastId)
+      |> toast.custom(content)
+      |> pair.new(model, _)
+    }
+    HideStickyToasts -> {
+      list.map(model.stickys, toast.hide)
+      |> effect.batch
+      |> pair.new(Model(..model, stickys: []), _)
+    }
+    UpdateStickyToastId(id:) -> {
+      [id, ..model.stickys]
+      |> fn(stickys) { Model(..model, stickys:) }
+      |> pair.new(effect.none())
+    }
+    UpdateTimeout(timeout:) -> #(Model(..model, timeout:), effect.none())
   }
 }
 
@@ -117,15 +140,15 @@ fn custom_toasts(model: Model) {
     ]),
     html.div_([], [
       html.text("Timeout (in seconds): "),
-      html.text(int.to_string(model)),
+      html.text(int.to_string(model.timeout)),
     ]),
     html.input_([
-      attribute.value(int.to_string(model)),
+      attribute.value(int.to_string(model.timeout)),
       attribute.type_("range"),
       event.on_input(fn(value) {
         int.parse(value)
-        |> result.map(UpdateModel)
-        |> result.unwrap(UpdateModel(model))
+        |> result.map(UpdateTimeout)
+        |> result.unwrap(UpdateTimeout(model.timeout))
       }),
     ]),
     layout.actions_wrapper([], [
@@ -163,8 +186,61 @@ fn custom_toasts(model: Model) {
   ])
 }
 
+fn sticky_toasts() {
+  layout.section([], [
+    layout.section_description([], [
+      html.text(
+        "Here, you can choose the duration for the toast to be displayed! You can choose different settings, and run the different toasts with individual settings.",
+      ),
+    ]),
+    layout.actions_wrapper([], [
+      layout.toast_button(
+        colors.light,
+        layout.palette.black,
+        [event.on_click(DisplayStickyToast(level.Standard))],
+        [html.text("Toast")],
+      ),
+      layout.toast_button(
+        colors.success,
+        layout.palette.white,
+        [event.on_click(DisplayStickyToast(level.Success))],
+        [html.text("Success")],
+      ),
+      layout.toast_button(
+        colors.info,
+        layout.palette.white,
+        [event.on_click(DisplayStickyToast(level.Info))],
+        [html.text("Info")],
+      ),
+      layout.toast_button(
+        colors.warning,
+        layout.palette.white,
+        [event.on_click(DisplayStickyToast(level.Warning))],
+        [html.text("Warning")],
+      ),
+      layout.toast_button(
+        colors.error,
+        layout.palette.white,
+        [event.on_click(DisplayStickyToast(level.Error))],
+        [html.text("Error")],
+      ),
+    ]),
+    layout.toast_button(
+      colors.error,
+      layout.palette.white,
+      [event.on_click(HideStickyToasts)],
+      [html.text("Hide sticky toasts")],
+    ),
+  ])
+}
+
 fn view(model: Model) {
   layout.body([], [
-    layout.main([], [header(), simple_toasts(), custom_toasts(model)]),
+    layout.main([], [
+      header(),
+      simple_toasts(),
+      custom_toasts(model),
+      sticky_toasts(),
+    ]),
   ])
 }

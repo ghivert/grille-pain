@@ -61,8 +61,7 @@ pub fn main(attributes, children) {
 }
 
 pub fn lucy(attributes) {
-  s.class([s.width(px(60))])
-  |> html.img(attributes)
+  html.img(s.class([s.width(px(60))]), attributes)
 }
 
 pub fn header_wrapper(attributes, children) {
@@ -86,8 +85,7 @@ pub fn subtitle(attributes, children) {
 }
 
 pub fn actions_wrapper(attributes, children) {
-  s.class([s.display("flex"), s.gap(px(12))])
-  |> html.div(attributes, children)
+  html.div(s.class([s.display("flex"), s.gap(px(12))]), attributes, children)
 }
 
 pub fn toast_button(background, color, attributes, children) {

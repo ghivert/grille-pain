@@ -11,7 +11,7 @@ repository = {type = "github", user = "ghivert", repo = "grille-pain"}
 [dependencies]
 birl = ">= 1.6.1 and < 2.0.0"
 gleam_stdlib = ">= 0.36.0 and < 1.0.0"
-lustre = ">= 4.4.3 and < 5.0.0"
+lustre = ">= 4.4.4 and < 5.0.0"
 sketch = ">= 3.0.2 and < 4.0.0"
 sketch_lustre = ">= 1.0.0 and < 2.0.0"
 plinth = ">= 0.4.12 and < 1.0.0"
