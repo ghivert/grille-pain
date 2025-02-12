@@ -2,14 +2,12 @@
 //// toasts. They should be used when your outside of lustre applications. Otherwise
 //// you should [head up to `grille_pain/lustre/toast`](/grille_pain/grille_pain/lustre/toast.html).
 
+import gleam/function
 import gleam/option.{type Option, None, Some}
 import grille_pain/internals/data/msg
-import grille_pain/internals/ffi
+import grille_pain/internals/effect_manager
 import grille_pain/toast/level.{type Level}
 import lustre
-
-@external(javascript, "../grille_pain.ffi.mjs", "uuid")
-fn uuid() -> String
 
 /// Options type allow to modify timeout or level at the notification level
 /// directly. This is used to create custom toasts and override defaults.
@@ -55,14 +53,13 @@ pub fn level(options: Options, level: Level) {
 }
 
 fn dispatch_toast(options: Options, message: String) {
-  let grille_pain_dispatch = ffi.dispatcher()
+  use uuid <- function.tap(uuid())
+  use dispatch <- effect_manager.call
   let Options(timeout:, level:, sticky:) = options
   let level = option.unwrap(level, level.Standard)
-  let uuid = uuid()
   msg.New(uuid:, message:, level:, timeout:, sticky:)
-  |> lustre.dispatch()
-  |> grille_pain_dispatch()
-  uuid
+  |> lustre.dispatch
+  |> dispatch
 }
 
 pub fn info(content: String) {
@@ -101,8 +98,11 @@ pub fn custom(options: Options, content: String) {
 
 /// Hide toast. Sticky toast can only be hidden using `hide`.
 pub fn hide(id: String) {
-  let grille_pain_dispatch = ffi.dispatcher()
+  use dispatch <- effect_manager.call
   msg.ExternalHide(id)
-  |> lustre.dispatch()
-  |> grille_pain_dispatch()
+  |> lustre.dispatch
+  |> dispatch
 }
+
+@external(javascript, "./toast.ffi.mjs", "uuid")
+fn uuid() -> String

@@ -3,15 +3,14 @@ import birl/duration.{Duration}
 import gleam/list
 import gleam/option.{type Option}
 import grille_pain/internals/data/toast.{type Toast, Toast}
-import grille_pain/internals/ffi
+import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
-import plinth/browser/shadow.{type ShadowRoot}
 
 pub type Model {
-  Model(toasts: List(Toast), id: Int, timeout: Int, root: ShadowRoot)
+  Model(toasts: List(Toast), id: Int, timeout: Int, root: Shadow)
 }
 
-pub fn new(root: ShadowRoot, timeout: Int) {
+pub fn new(root: Shadow, timeout: Int) {
   let toasts = []
   let id = 0
   Model(toasts: toasts, id: id, timeout: timeout, root: root)
@@ -68,7 +67,7 @@ pub fn decrease_bottom(model: Model, id: Int) {
     use toast <- list.map(model.toasts)
     case toast.displayed, toast.id > id {
       True, True -> {
-        let bottom = ffi.compute_toast_size(id, model.root)
+        let bottom = toast.compute_size(id, model.root)
         let bottom = toast.bottom - bottom
         Toast(..toast, bottom:)
       }

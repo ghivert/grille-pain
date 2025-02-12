@@ -14,45 +14,26 @@ import grille_pain/error
 import grille_pain/internals/data/model.{type Model, Model}
 import grille_pain/internals/data/msg.{type Msg}
 import grille_pain/internals/data/toast
-import grille_pain/internals/ffi
+import grille_pain/internals/effect_manager
 import grille_pain/internals/lustre/schedule.{schedule}
-import grille_pain/internals/view.{view}
+import grille_pain/internals/setup
 import grille_pain/options.{type Options}
 import lustre
 import lustre/effect
-import plinth/browser/document
-import plinth/browser/element
-import plinth/browser/shadow
-import sketch as s
-import sketch/lustre as sketch
 
 /// Setup a new `grille_pain` instance. You should not instanciate two instances
 /// on the page, as `grille_pain` expect to run as a singleton.
 /// Use `grille_pain/options` to provide and customise options.
 pub fn setup(opts: Options) {
-  let node = document.create_element("grille-pain")
-  let lustre_root_ = document.create_element("div")
-  let shadow_root = shadow.attach_shadow(node, shadow.Open)
-  let lustre_root = ffi.coerce(lustre_root_)
-  shadow.append_child(shadow_root, lustre_root_)
-  document.body() |> element.append_child(node)
-  ffi.add_keyframe(shadow_root)
-
-  use view <- result.try({
-    let shadow = sketch.shadow(shadow_root)
-    s.cache(strategy: s.Ephemeral)
-    |> result.map_error(error.SketchError)
-    |> result.map(sketch.compose(shadow, view, _))
-  })
-
+  use #(lustre_root, shadow) <- result.try(setup.mount())
+  use view <- result.try(setup.view(shadow))
   use dispatcher <- result.map({
-    fn(_) { #(model.new(shadow_root, opts.timeout), effect.none()) }
+    fn(_) { #(model.new(shadow, opts.timeout), effect.none()) }
     |> lustre.application(update, view)
     |> lustre.start(lustre_root, Nil)
-    |> result.map_error(error.LustreError)
+    |> error.lustre
   })
-
-  ffi.store_dispatcher(dispatcher)
+  effect_manager.register(dispatcher)
 }
 
 /// Setup a new `grille_pain` instance. You should not instanciate two instances

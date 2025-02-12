@@ -1,7 +1,6 @@
 import birl
-import grille_pain/internals/ffi
+import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
-import plinth/browser/shadow.{type ShadowRoot}
 
 pub type Toast {
   Toast(
@@ -27,7 +26,7 @@ pub fn new(
   level level: Level,
   animation_duration remaining: Int,
   sticky sticky: Bool,
-  root root: ShadowRoot,
+  root root: Shadow,
 ) {
   Toast(
     external_id:,
@@ -39,7 +38,7 @@ pub fn new(
     remaining:,
     last_schedule: birl.utc_now(),
     iteration: 0,
-    bottom: ffi.compute_bottom_position(root),
+    bottom: compute_bottom_position(root),
     level:,
     animation_duration: remaining,
   )
@@ -63,3 +62,9 @@ pub fn by_id(toast: Toast, id: Int) {
 pub fn by_iteration(toast: Toast, id: Int, iteration: Int) {
   toast.id == id && toast.iteration == iteration
 }
+
+@external(javascript, "./toast.ffi.mjs", "computeToastSize")
+pub fn compute_size(id: Int, root: Shadow) -> Int
+
+@external(javascript, "./toast.ffi.mjs", "computeBottomPosition")
+fn compute_bottom_position(root: Shadow) -> Int

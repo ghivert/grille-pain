@@ -1,6 +1,6 @@
-import sketch as s
+import sketch/css
+import sketch/css/length.{px, vh}
 import sketch/lustre/element/html
-import sketch/size.{px, vh}
 
 pub type Palette {
   Palette(
@@ -35,85 +35,86 @@ pub const palette = Palette(
 pub fn body(attributes, children) {
   let font_family =
     "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif"
-  s.class([
-    s.color(palette.black),
-    s.font_family(font_family),
-    s.min_height(vh(100)),
-    s.margin(px(-10)),
-    s.background(palette.aged_plastic_yellow),
-    s.display("flex"),
-    s.flex_direction("column"),
-    s.justify_content("center"),
+  css.class([
+    css.color(palette.black),
+    css.font_family(font_family),
+    css.min_height(vh(100)),
+    css.margin(px(-10)),
+    css.background(palette.aged_plastic_yellow),
+    css.display("flex"),
+    css.flex_direction("column"),
+    css.justify_content("center"),
   ])
   |> html.div(attributes, children)
 }
 
 pub fn main(attributes, children) {
-  s.class([
-    s.padding(px(24)),
-    s.max_width(px(700)),
-    s.margin_("0 auto"),
-    s.display("flex"),
-    s.flex_direction("column"),
-    s.gap(px(48)),
+  css.class([
+    css.padding(px(24)),
+    css.max_width(px(700)),
+    css.margin_("0 auto"),
+    css.display("flex"),
+    css.flex_direction("column"),
+    css.gap(px(48)),
   ])
   |> html.main(attributes, children)
 }
 
 pub fn lucy(attributes) {
-  html.img(s.class([s.width(px(60))]), attributes)
+  html.img(css.class([css.width(px(60))]), attributes)
 }
 
 pub fn header_wrapper(attributes, children) {
-  s.class([s.display("flex"), s.gap(px(12)), s.align_items("center")])
+  css.class([css.display("flex"), css.gap(px(12)), css.align_items("center")])
   |> html.div(attributes, children)
 }
 
 pub fn title_wrapper(attributes, children) {
-  s.class([s.display("flex"), s.flex_direction("column"), s.gap(px(6))])
+  css.class([css.display("flex"), css.flex_direction("column"), css.gap(px(6))])
   |> html.div(attributes, children)
 }
 
 pub fn title(attributes, children) {
-  s.class([s.font_weight("600"), s.font_size(px(24))])
+  css.class([css.font_weight("600"), css.font_size(px(24))])
   |> html.div(attributes, children)
 }
 
 pub fn subtitle(attributes, children) {
-  s.class([s.font_weight("500"), s.color(palette.underwater_blue)])
+  css.class([css.font_weight("500"), css.color(palette.underwater_blue)])
   |> html.div(attributes, children)
 }
 
 pub fn actions_wrapper(attributes, children) {
-  html.div(s.class([s.display("flex"), s.gap(px(12))]), attributes, children)
+  css.class([css.display("flex"), css.gap(px(12))])
+  |> html.div(attributes, children)
 }
 
 pub fn toast_button(background, color, attributes, children) {
-  s.class([
-    s.font_family("inherit"),
-    s.cursor("pointer"),
-    s.appearance("none"),
-    s.background(background),
-    s.border("none"),
-    s.color(color),
-    s.font_size(px(20)),
-    s.padding_("12px 24px"),
-    s.border_radius(px(10)),
-    s.font_weight("600"),
-    s.box_shadow("2px 2px 2px 1px #bbb"),
-    s.transition(".3s box-shadow"),
-    s.active([s.box_shadow("inset 2px 2px 5px 1px #aaa")]),
+  css.class([
+    css.font_family("inherit"),
+    css.cursor("pointer"),
+    css.appearance("none"),
+    css.background(background),
+    css.border("none"),
+    css.color(color),
+    css.font_size(px(20)),
+    css.padding_("12px 24px"),
+    css.border_radius(px(10)),
+    css.font_weight("600"),
+    css.box_shadow("2px 2px 2px 1px #bbb"),
+    css.transition(".3s box-shadow"),
+    css.active([css.box_shadow("inset 2px 2px 5px 1px #aaa")]),
   ])
   |> html.button(attributes, children)
 }
 
 pub fn section(attributes, children) {
-  s.class([s.display("flex"), s.flex_direction("column"), s.gap(px(12))])
+  css.class([css.display("flex"), css.flex_direction("column"), css.gap(px(12))])
   |> html.section(attributes, children)
 }
 
 pub fn section_title(attributes, children) {
-  s.class([s.font_size(size.rem(1.05)), s.font_weight("600")])
+  css.class([css.font_size(length.rem(1.05)), css.font_weight("600")])
   |> html.h2(attributes, children)
 }
 

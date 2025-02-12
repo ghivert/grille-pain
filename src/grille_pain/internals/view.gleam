@@ -1,19 +1,19 @@
 import gleam/bool
 import gleam/int
 import gleam/list
-import grille_pain/internals/css
+import grille_pain/internals/css.{var} as _
 import grille_pain/internals/data/model.{type Model, Model}
 import grille_pain/internals/data/msg.{type Msg, Hide, Resume, Stop}
 import grille_pain/internals/data/toast.{type Toast}
-import grille_pain/internals/view/colors
 import grille_pain/internals/view/progress_bar
+import grille_pain/internals/view/theme
 import grille_pain/toast/level.{type Level}
 import lustre/attribute
 import lustre/event
-import sketch
+import sketch/css
+import sketch/css/length.{px}
 import sketch/lustre/element
 import sketch/lustre/element/html
-import sketch/size.{px}
 
 pub fn view(model: Model) {
   let toasts = model.toasts
@@ -43,8 +43,8 @@ fn toast_container(toast: Toast, children: List(element.Element(Msg))) {
   let mouse_enter = event.on_mouse_enter(Stop(toast.id))
   let mouse_leave = event.on_mouse_leave(Resume(toast.id))
   [toast_colors(toast.level), toast_class()]
-  |> list.map(sketch.compose)
-  |> sketch.class
+  |> list.map(css.compose)
+  |> css.class
   |> html.div([mouse_enter, mouse_leave], children)
 }
 
@@ -55,17 +55,17 @@ fn toast_progress_bar(toast: Toast) {
 
 fn toast_wrapper(toast: Toast, attributes, children) {
   let min_bot = int.max(0, toast.bottom)
-  sketch.class([
-    sketch.padding(px(12)),
-    sketch.position("fixed"),
-    sketch.top(px(min_bot)),
-    sketch.transition("right 0.7s, top 0.7s"),
-    sketch.z_index(1_000_000),
+  css.class([
+    css.padding(px(12)),
+    css.position("fixed"),
+    css.top(px(min_bot)),
+    css.transition("right 0.7s, top 0.7s"),
+    css.z_index(1_000_000),
     case toast.displayed {
-      True -> sketch.right(px(0))
+      True -> css.right(px(0))
       False -> {
-        let width = css.var("grille_pain-width", "320px")
-        sketch.right_("calc(-1 * " <> width <> " - 100px)")
+        let width = var("grille_pain-width", "320px")
+        css.right_("calc(-1 * " <> width <> " - 100px)")
       }
     },
   ])
@@ -85,41 +85,41 @@ fn wrapper_dom_classes(toast: Toast) {
 }
 
 fn toast_class() {
-  sketch.class([
-    sketch.display("flex"),
-    sketch.flex_direction("column"),
+  css.class([
+    css.display("flex"),
+    css.flex_direction("column"),
     // Sizes
-    sketch.width_(css.var("grille_pain-toast-width", "320px")),
-    sketch.min_height_(css.var("grille_pain-toast-min-height", "64px")),
-    sketch.max_height_(css.var("grille_pain-toast-max-height", "800px")),
+    css.width_(var("grille_pain-toast-width", "320px")),
+    css.min_height_(var("grille_pain-toast-min-height", "64px")),
+    css.max_height_(var("grille_pain-toast-max-height", "800px")),
     // Spacings
-    sketch.border_radius_(css.var("grille_pain-toast-border-radius", "6px")),
+    css.border_radius_(var("grille_pain-toast-border-radius", "6px")),
     // Colors
-    sketch.box_shadow("0px 4px 12px rgba(0, 0, 0, 0.1)"),
+    css.box_shadow("0px 4px 12px rgba(0, 0, 0, 0.1)"),
     // Animation
-    sketch.overflow("hidden"),
-    sketch.cursor("pointer"),
+    css.overflow("hidden"),
+    css.cursor("pointer"),
   ])
 }
 
 fn toast_colors(level: Level) {
-  let #(background, text_color) = colors.from_level(level)
+  let #(background, text_color) = theme.color(from: level)
   let level = level.to_string(level)
   let background_ = "grille_pain-" <> level <> "-background"
   let text = "grille_pain-" <> level <> "-text-color"
-  sketch.class([
-    sketch.background(css.var(background_, background)),
-    sketch.color(css.var(text, text_color)),
+  css.class([
+    css.background(var(background_, background)),
+    css.color(var(text, text_color)),
   ])
 }
 
 fn toast_content(attributes, children) {
-  sketch.class([
-    sketch.display("flex"),
-    sketch.align_items("center"),
-    sketch.flex("1"),
-    sketch.padding_("8px 16px"),
-    sketch.font_size(px(14)),
+  css.class([
+    css.display("flex"),
+    css.align_items("center"),
+    css.flex("1"),
+    css.padding_("8px 16px"),
+    css.font_size(px(14)),
   ])
   |> html.div(attributes, children)
 }

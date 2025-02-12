@@ -3,7 +3,7 @@ import gleam/list
 import gleam/pair
 import gleam/result
 import grille_pain
-import grille_pain/internals/view/colors
+import grille_pain/internals/view/theme
 import grille_pain/lustre/toast
 import grille_pain/toast/level
 import layout
@@ -35,10 +35,9 @@ pub type Msg {
 pub fn main() {
   let init = fn(_) { #(Model(timeout: 0, stickys: []), effect.none()) }
   let assert Ok(_) = grille_pain.simple()
-  let assert Ok(cache) = sketch.cache(strategy: sketch.Ephemeral)
+  let assert Ok(stylesheet) = sketch.stylesheet(strategy: sketch.Ephemeral)
   let assert Ok(_) =
-    view
-    |> sketch_lustre.compose(sketch_lustre.node(), _, cache)
+    view(_, stylesheet)
     |> lustre.application(init, update, _)
     |> lustre.start("#app", Nil)
 }
@@ -101,31 +100,31 @@ fn simple_toasts() {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        colors.light,
+        theme.light,
         layout.palette.black,
         [event.on_click(DisplayBasicToast("Toast", toast.toast))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        colors.success,
+        theme.success,
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Success", toast.success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        colors.info,
+        theme.info,
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Info", toast.info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        colors.warning,
+        theme.warning,
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Warning", toast.warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        colors.error,
+        theme.error,
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Error", toast.error))],
         [html.text("Error")],
@@ -157,31 +156,31 @@ fn custom_toasts(model: Model) {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        colors.light,
+        theme.light,
         layout.palette.black,
         [event.on_click(DisplayCustomToast(level.Standard))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        colors.success,
+        theme.success,
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        colors.info,
+        theme.info,
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        colors.warning,
+        theme.warning,
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        colors.error,
+        theme.error,
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Error))],
         [html.text("Error")],
@@ -200,31 +199,31 @@ fn sticky_toasts() {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        colors.light,
+        theme.light,
         layout.palette.black,
         [event.on_click(DisplayStickyToast(level.Standard))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        colors.success,
+        theme.success,
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        colors.info,
+        theme.info,
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        colors.warning,
+        theme.warning,
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        colors.error,
+        theme.error,
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Error))],
         [html.text("Error")],
@@ -233,7 +232,7 @@ fn sticky_toasts() {
     html.br_([]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        colors.error,
+        theme.error,
         layout.palette.white,
         [event.on_click(HideStickyToasts)],
         [html.text("Hide sticky toasts")],
@@ -242,7 +241,8 @@ fn sticky_toasts() {
   ])
 }
 
-fn view(model: Model) {
+fn view(model: Model, stylesheet: sketch.StyleSheet) {
+  use <- sketch_lustre.render(stylesheet, in: [sketch_lustre.node()])
   layout.body([], [
     layout.main([], [
       header(),
