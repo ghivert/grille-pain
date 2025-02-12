@@ -12,7 +12,7 @@ export function attachShadow(element) {
 
 export function appendChild(root, child) {
   root.appendChild(child)
-  return root
+  return new gleam.Ok(root)
 }
 
 export function body() {

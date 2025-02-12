@@ -105,4 +105,6 @@ pub fn hide(id: String) {
 }
 
 @external(javascript, "./toast.ffi.mjs", "uuid")
-fn uuid() -> String
+fn uuid() -> String {
+  ""
+}
