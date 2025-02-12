@@ -15,3 +15,7 @@ export function computeToastSize(id, root) {
   }
   return 0
 }
+
+export function uuid() {
+  return crypto.randomUUID()
+}

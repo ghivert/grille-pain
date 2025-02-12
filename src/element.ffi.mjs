@@ -1,4 +1,4 @@
-import * as gleam from '../../gleam.mjs'
+import * as gleam from './gleam.mjs'
 
 export function create(tag) {
   if (typeof document === 'undefined') return new gleam.Error()
