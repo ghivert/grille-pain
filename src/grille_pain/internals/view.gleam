@@ -43,12 +43,12 @@ fn view_toast(toast: Toast) {
 
 fn select_on_click_action(toast: Toast) {
   use <- bool.lazy_guard(when: toast.sticky, return: attribute.none)
-  event.on_click(msg.HideToast(toast.id, toast.iteration))
+  event.on_click(msg.ToastTimedOut(toast.id, toast.iteration))
 }
 
 fn toast_container(toast: Toast, children: List(element.Element(Msg))) {
-  let mouse_enter = event.on_mouse_enter(msg.StopToast(toast.id))
-  let mouse_leave = event.on_mouse_leave(msg.ResumeToast(toast.id))
+  let mouse_enter = event.on_mouse_enter(msg.UserEnteredToast(toast.id))
+  let mouse_leave = event.on_mouse_leave(msg.UserLeavedToast(toast.id))
   [toast_colors(toast.level), toast_class()]
   |> list.map(css.compose)
   |> css.class

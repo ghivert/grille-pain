@@ -46,40 +46,40 @@ pub fn simple() {
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    msg.RemoveToast(id) -> {
+    msg.ToastHidDisplay(id) -> {
       let model = model.remove(model, id)
       let update = update_display(model)
       #(model, update)
     }
 
-    msg.StopToast(id) -> {
+    msg.UserEnteredToast(id) -> {
       let model = model.stop(model, id)
       #(model, effect.none())
     }
 
-    msg.ExternalHide(uuid:) -> {
+    msg.UserHidToast(uuid:) -> {
       case list.find(model.toasts, toast.by_uuid(_, uuid)) {
         Error(_) -> #(model, effect.none())
         Ok(toast) -> #(model, {
           use dispatch <- effect.from()
-          dispatch(msg.HideToast(toast.id, toast.iteration))
+          dispatch(msg.ToastTimedOut(toast.id, toast.iteration))
         })
       }
     }
 
-    msg.HideToast(id, iteration) -> {
+    msg.ToastTimedOut(id, iteration) -> {
       case list.find(model.toasts, toast.by_iteration(_, id, iteration)) {
         Error(_) -> #(model, effect.none())
         Ok(toast) -> {
           let model = model.hide(model, toast.id)
-          let to_remove = schedule(1000, msg.RemoveToast(id))
+          let to_remove = schedule(1000, msg.ToastHidDisplay(id))
           let update = update_display(model)
           #(model, effect.batch([to_remove, update]))
         }
       }
     }
 
-    msg.ResumeToast(id) -> {
+    msg.UserLeavedToast(id) -> {
       case list.find(model.toasts, toast.by_id(_, id)) {
         Error(_) -> #(model, effect.none())
         Ok(toast.Toast(sticky:, remaining:, iteration:, ..)) -> {
@@ -89,14 +89,14 @@ fn update(model: Model, msg: Msg) {
       }
     }
 
-    msg.NewToast(uuid:, message:, level:, timeout:, sticky:) -> {
+    msg.UserAddedToast(uuid:, message:, level:, timeout:, sticky:) -> {
       model.add(uuid:, model:, message:, level:, timeout:, sticky:)
       |> pair.new(update_display(model))
     }
 
     // Called after a requestAnimationFrame call.
     // Avoid to call an infinity of animation frames.
-    msg.UpdateNextAnimationFrame(frame) -> {
+    msg.LustreRequestedAnimationFrame(frame) -> {
       let next_frame = option.Some(frame)
       let model = Model(..model, next_frame:)
       #(model, effect.none())
@@ -104,14 +104,14 @@ fn update(model: Model, msg: Msg) {
 
     // Recompute positions of every toast, and schedule a management of
     // model to recompute next positions.
-    msg.UpdateDisplay -> {
+    msg.BrowserUpdatedToasts -> {
       let model = Model(..model, next_frame: option.None)
       let model = model.update_bottom_positions(model)
       #(model, update_toasts(model))
     }
 
     // Compute the new state of toasts.
-    msg.UpdateToasts -> {
+    msg.LustreComputedToasts -> {
       let model = Model(..model, next_frame: option.None)
       case model.to_show {
         [] -> #(model, effect.none())
@@ -139,7 +139,7 @@ fn show(model: Model, id: Int, timeout: option.Option(Int), sticky: Bool) {
 
 fn schedule_hide(sticky, timeout, id, iteration) {
   use <- bool.lazy_guard(when: sticky, return: effect.none)
-  schedule(timeout, msg.HideToast(id, iteration))
+  schedule(timeout, msg.ToastTimedOut(id, iteration))
 }
 
 fn update_display(model: Model) {
@@ -148,9 +148,9 @@ fn update_display(model: Model) {
     option.None -> {
       use dispatch <- effect.from()
       dispatch({
-        msg.UpdateNextAnimationFrame({
+        msg.LustreRequestedAnimationFrame({
           use <- request_animation_frame()
-          dispatch(msg.UpdateDisplay)
+          dispatch(msg.BrowserUpdatedToasts)
         })
       })
     }
@@ -163,9 +163,9 @@ fn update_toasts(model: Model) {
     option.None -> {
       use dispatch <- effect.from()
       dispatch({
-        msg.UpdateNextAnimationFrame({
+        msg.LustreRequestedAnimationFrame({
           use <- request_animation_frame()
-          dispatch(msg.UpdateToasts)
+          dispatch(msg.LustreComputedToasts)
         })
       })
     }
