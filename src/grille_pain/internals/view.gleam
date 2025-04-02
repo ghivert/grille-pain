@@ -3,7 +3,7 @@ import gleam/int
 import gleam/list
 import grille_pain/internals/css.{var} as _
 import grille_pain/internals/data/model.{type Model, Model}
-import grille_pain/internals/data/msg.{type Msg, Hide, Resume, Stop}
+import grille_pain/internals/data/msg.{type Msg}
 import grille_pain/internals/data/toast.{type Toast}
 import grille_pain/internals/view/progress_bar
 import grille_pain/internals/view/theme
@@ -26,22 +26,29 @@ pub fn view(model: Model) {
 
 fn view_toast(toast: Toast) {
   let on_hide = select_on_click_action(toast)
-  toast_wrapper(toast, [wrapper_dom_classes(toast)], [
-    toast_container(toast, [
-      toast_content([on_hide], [html.text(toast.message)]),
-      toast_progress_bar(toast),
-    ]),
-  ])
+  toast_wrapper(
+    toast,
+    [
+      wrapper_dom_classes(toast),
+      attribute.attribute("data-id", int.to_string(toast.id)),
+    ],
+    [
+      toast_container(toast, [
+        toast_content([on_hide], [html.text(toast.message)]),
+        toast_progress_bar(toast),
+      ]),
+    ],
+  )
 }
 
 fn select_on_click_action(toast: Toast) {
   use <- bool.lazy_guard(when: toast.sticky, return: attribute.none)
-  event.on_click(Hide(toast.id, toast.iteration))
+  event.on_click(msg.HideToast(toast.id, toast.iteration))
 }
 
 fn toast_container(toast: Toast, children: List(element.Element(Msg))) {
-  let mouse_enter = event.on_mouse_enter(Stop(toast.id))
-  let mouse_leave = event.on_mouse_leave(Resume(toast.id))
+  let mouse_enter = event.on_mouse_enter(msg.StopToast(toast.id))
+  let mouse_leave = event.on_mouse_leave(msg.ResumeToast(toast.id))
   [toast_colors(toast.level), toast_class()]
   |> list.map(css.compose)
   |> css.class
@@ -59,11 +66,14 @@ fn toast_wrapper(toast: Toast, attributes, children) {
     css.padding(px(12)),
     css.position("fixed"),
     css.top(px(min_bot)),
-    css.transition("right 0.7s, top 0.7s"),
+    css.transition(case toast.displayed {
+      toast.Show | toast.WillHide -> "right 0.7s, top 0.7s"
+      toast.WillShow -> "right 0.7s"
+    }),
     css.z_index(1_000_000),
     case toast.displayed {
-      True -> css.right(px(0))
-      False -> {
+      toast.Show -> css.right(px(0))
+      toast.WillShow | toast.WillHide -> {
         let width = var("grille_pain-width", "320px")
         css.right_("calc(-1 * " <> width <> " - 100px)")
       }
@@ -74,8 +84,9 @@ fn toast_wrapper(toast: Toast, attributes, children) {
 
 fn wrapper_dom_classes(toast: Toast) {
   let displayed = case toast.displayed {
-    True -> "visible"
-    False -> "hidden"
+    toast.Show -> "show"
+    toast.WillHide -> "will-hide"
+    toast.WillShow -> "will-show"
   }
   attribute.classes([
     #("grille_pain-toast", True),

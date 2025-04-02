@@ -2,13 +2,19 @@ import birl
 import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
 
+pub type DisplayState {
+  WillShow
+  Show
+  WillHide
+}
+
 pub type Toast {
   Toast(
     external_id: String,
     id: Int,
     sticky: Bool,
     message: String,
-    displayed: Bool,
+    displayed: DisplayState,
     running: Bool,
     remaining: Int,
     last_schedule: birl.Time,
@@ -33,12 +39,12 @@ pub fn new(
     id:,
     message:,
     sticky:,
-    displayed: False,
+    displayed: WillShow,
     running: False,
     remaining:,
     last_schedule: birl.utc_now(),
     iteration: 0,
-    bottom: compute_bottom_position(root),
+    bottom: compute_bottom_position(root, id),
     level:,
     animation_duration: remaining,
   )
@@ -71,7 +77,7 @@ pub fn compute_size(_id: Int, _root: Shadow) -> Int {
 }
 
 @external(javascript, "../../../toast.ffi.mjs", "computeBottomPosition")
-fn compute_bottom_position(_root: Shadow) -> Int {
+pub fn compute_bottom_position(_root: Shadow, _id: Int) -> Int {
   // That function can probably never be reached, since `grille_paint` will
   // never be instanciated on the BEAM.
   0

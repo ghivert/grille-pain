@@ -46,55 +46,131 @@ pub fn simple() {
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    msg.Remove(id) -> Ok(#(model.remove(model, id), effect.none()))
-    msg.Stop(id) -> Ok(#(model.stop(model, id), effect.none()))
-    msg.Show(..) -> show(model, msg)
-    msg.ExternalHide(uuid:) -> external_hide(model, uuid)
-    msg.Hide(id, iteration) -> hide(model, id, iteration)
-    msg.Resume(id) -> resume(model, id)
-    msg.New(..) -> new(model, msg)
+    msg.RemoveToast(id) -> {
+      let model = model.remove(model, id)
+      let update = update_display(model)
+      #(model, update)
+    }
+
+    msg.StopToast(id) -> {
+      let model = model.stop(model, id)
+      #(model, effect.none())
+    }
+
+    msg.ExternalHide(uuid:) -> {
+      case list.find(model.toasts, toast.by_uuid(_, uuid)) {
+        Error(_) -> #(model, effect.none())
+        Ok(toast) -> #(model, {
+          use dispatch <- effect.from()
+          dispatch(msg.HideToast(toast.id, toast.iteration))
+        })
+      }
+    }
+
+    msg.HideToast(id, iteration) -> {
+      case list.find(model.toasts, toast.by_iteration(_, id, iteration)) {
+        Error(_) -> #(model, effect.none())
+        Ok(toast) -> {
+          let model = model.hide(model, toast.id)
+          let to_remove = schedule(1000, msg.RemoveToast(id))
+          let update = update_display(model)
+          #(model, effect.batch([to_remove, update]))
+        }
+      }
+    }
+
+    msg.ResumeToast(id) -> {
+      case list.find(model.toasts, toast.by_id(_, id)) {
+        Error(_) -> #(model, effect.none())
+        Ok(toast.Toast(sticky:, remaining:, iteration:, ..)) -> {
+          let new_model = model.resume(model, id)
+          #(new_model, schedule_hide(sticky, remaining, id, iteration))
+        }
+      }
+    }
+
+    msg.NewToast(uuid:, message:, level:, timeout:, sticky:) -> {
+      model.add(uuid:, model:, message:, level:, timeout:, sticky:)
+      |> pair.new(update_display(model))
+    }
+
+    // Called after a requestAnimationFrame call.
+    // Avoid to call an infinity of animation frames.
+    msg.UpdateNextAnimationFrame(frame) -> {
+      let next_frame = option.Some(frame)
+      let model = Model(..model, next_frame:)
+      #(model, effect.none())
+    }
+
+    // Recompute positions of every toast, and schedule a management of
+    // model to recompute next positions.
+    msg.UpdateDisplay -> {
+      let model = Model(..model, next_frame: option.None)
+      let model = model.update_bottom_positions(model)
+      #(model, update_toasts(model))
+    }
+
+    // Compute the new state of toasts.
+    msg.UpdateToasts -> {
+      let model = Model(..model, next_frame: option.None)
+      case model.to_show {
+        [] -> #(model, effect.none())
+        showable -> {
+          let model = Model(..model, to_show: [])
+          #(model, update_display(model))
+          |> list.fold(showable, _, fn(model, showable) {
+            let model.ToShow(toast_id:, timeout:, sticky:) = showable
+            let #(model, effs) = model
+            let #(model, eff) = show(model, toast_id, timeout, sticky)
+            #(model, effect.batch([effs, eff]))
+          })
+        }
+      }
+    }
   }
-  |> result.unwrap(#(model, effect.none()))
 }
 
-fn show(model: Model, msg: msg.Msg) {
-  let assert msg.Show(id:, timeout:, sticky:) = msg
+fn show(model: Model, id: Int, timeout: option.Option(Int), sticky: Bool) {
   let time = option.unwrap(timeout, model.timeout)
   let new_model = model.show(model, id)
   let eff = schedule_hide(sticky, time, id, 0)
-  Ok(#(new_model, eff))
-}
-
-fn external_hide(model: Model, uuid: String) {
-  let toast = model.toasts |> list.find(toast.by_uuid(_, uuid))
-  use toast <- result.map(toast)
-  #(model, schedule(1000, msg.Hide(toast.id, toast.iteration)))
-}
-
-fn hide(model: Model, id: Int, iteration: Int) {
-  let toast = model.toasts |> list.find(toast.by_iteration(_, id, iteration))
-  use toast <- result.map(toast)
-  model
-  |> model.hide(toast.id)
-  |> model.decrease_bottom(toast.id)
-  |> pair.new(schedule(1000, msg.Remove(id)))
-}
-
-fn resume(model: Model, id: Int) {
-  let new_model = model.resume(model, id)
-  let toast = model.toasts |> list.find(toast.by_id(_, id))
-  use toast.Toast(sticky:, remaining:, iteration:, ..) <- result.map(toast)
-  #(new_model, schedule_hide(sticky, remaining, id, iteration))
-}
-
-fn new(model: Model, msg: Msg) {
-  let assert msg.New(uuid:, message:, level:, timeout:, sticky:) = msg
-  let old_id = model.id
-  let new_model = model.add(uuid:, model:, message:, level:, timeout:, sticky:)
-  Ok(#(new_model, schedule(100, msg.Show(old_id, timeout, sticky:))))
+  #(new_model, eff)
 }
 
 fn schedule_hide(sticky, timeout, id, iteration) {
   use <- bool.lazy_guard(when: sticky, return: effect.none)
-  schedule(timeout, msg.Hide(id, iteration))
+  schedule(timeout, msg.HideToast(id, iteration))
 }
+
+fn update_display(model: Model) {
+  case model.next_frame {
+    option.Some(_) -> effect.none()
+    option.None -> {
+      use dispatch <- effect.from()
+      dispatch({
+        msg.UpdateNextAnimationFrame({
+          use <- request_animation_frame()
+          dispatch(msg.UpdateDisplay)
+        })
+      })
+    }
+  }
+}
+
+fn update_toasts(model: Model) {
+  case model.next_frame {
+    option.Some(_) -> effect.none()
+    option.None -> {
+      use dispatch <- effect.from()
+      dispatch({
+        msg.UpdateNextAnimationFrame({
+          use <- request_animation_frame()
+          dispatch(msg.UpdateToasts)
+        })
+      })
+    }
+  }
+}
+
+@external(javascript, "./global.ffi.mjs", "requestAnimationFrame")
+fn request_animation_frame(next: fn() -> Nil) -> model.AnimationFrame

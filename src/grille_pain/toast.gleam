@@ -57,7 +57,7 @@ fn dispatch_toast(options: Options, message: String) {
   use dispatch <- effect_manager.call
   let Options(timeout:, level:, sticky:) = options
   let level = option.unwrap(level, level.Standard)
-  msg.New(uuid:, message:, level:, timeout:, sticky:)
+  msg.NewToast(uuid:, message:, level:, timeout:, sticky:)
   |> lustre.dispatch
   |> dispatch
 }

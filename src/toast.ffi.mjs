@@ -1,10 +1,13 @@
-export function computeBottomPosition(root) {
+export function computeBottomPosition(root, id) {
   const [...nodes] = root.querySelectorAll('.grille_pain-toast')
-  return nodes.reduce((acc, node) => {
-    if (node.classList.contains('grille_pain-toast-hidden')) return acc
+  const result = nodes.reduce((acc, node) => {
+    if (node.classList.contains('grille_pain-toast-will-hide')) return acc
+    const nodeId = parseInt(node.getAttribute('data-id'))
+    if (nodeId >= id) return acc
     const dimensions = node.getBoundingClientRect()
     return acc + dimensions.height - 12
   }, 0)
+  return result
 }
 
 export function computeToastSize(id, root) {

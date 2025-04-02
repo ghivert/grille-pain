@@ -9,9 +9,9 @@ import sketch/lustre/element/html
 
 pub fn view(toast: Toast) {
   css.class([
+    css.compose(pb_animation(toast.animation_duration)),
     css.compose(pb_base()),
     css.compose(pb_background_color(toast.level)),
-    css.compose(pb_animation(toast.animation_duration)),
     css.compose(pb_play_state(toast.running)),
   ])
   |> html.div([], [])

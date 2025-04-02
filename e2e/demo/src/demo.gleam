@@ -46,12 +46,18 @@ fn update(model: Model, msg: Msg) {
   case msg {
     DisplayBasicToast(content, toast) -> #(model, toast(content))
     DisplayCustomToast(level) -> {
-      let content = level.to_string(level)
-      toast.options()
-      |> toast.timeout(model.timeout * 1000)
-      |> toast.level(level)
-      |> toast.custom(content <> base_content)
-      |> pair.new(model, _)
+      pair.new(model, {
+        effect.batch({
+          list.repeat(0, 10)
+          |> list.map(fn(_) {
+            let content = level.to_string(level)
+            toast.options()
+            |> toast.timeout(model.timeout * int.max(100, int.random(1000)))
+            |> toast.level(level)
+            |> toast.custom(content <> base_content)
+          })
+        })
+      })
     }
     DisplayStickyToast(level) -> {
       let content = level.to_string(level)

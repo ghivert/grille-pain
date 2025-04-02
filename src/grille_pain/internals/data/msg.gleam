@@ -1,18 +1,21 @@
 import gleam/option.{type Option}
+import grille_pain/internals/data/model
 import grille_pain/toast/level.{type Level}
 
 pub type Msg {
   ExternalHide(uuid: String)
-  Hide(id: Int, iteration: Int)
-  New(
+  HideToast(id: Int, iteration: Int)
+  NewToast(
     uuid: String,
     message: String,
     level: Level,
     timeout: Option(Int),
     sticky: Bool,
   )
-  Remove(id: Int)
-  Resume(id: Int)
-  Show(id: Int, timeout: Option(Int), sticky: Bool)
-  Stop(id: Int)
+  RemoveToast(id: Int)
+  ResumeToast(id: Int)
+  StopToast(id: Int)
+  UpdateDisplay
+  UpdateToasts
+  UpdateNextAnimationFrame(model.AnimationFrame)
 }
