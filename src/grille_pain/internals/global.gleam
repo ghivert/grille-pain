@@ -1,3 +1,5 @@
+import grille_pain/internals/unsafe
+
 pub type AnimationFrame
 
 @external(javascript, "./global.ffi.mjs", "setTimeout")
@@ -11,4 +13,6 @@ pub fn now() -> Int {
 }
 
 @external(javascript, "./global.ffi.mjs", "requestAnimationFrame")
-pub fn request_animation_frame(next: fn() -> Nil) -> AnimationFrame
+pub fn request_animation_frame(_next: fn() -> Nil) -> AnimationFrame {
+  unsafe.coerce(0)
+}
