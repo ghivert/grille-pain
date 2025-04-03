@@ -28,7 +28,7 @@ pub fn color(from level: level.Level) {
   }
 }
 
-@external(javascript, "../../../theme.ffi.mjs", "isDark")
+@external(javascript, "./theme.ffi.mjs", "isDark")
 pub fn is_dark() -> Bool {
   // That function can probably never be reached, since `grille_paint` will
   // never be instanciated on the BEAM.
