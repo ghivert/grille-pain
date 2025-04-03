@@ -1,8 +1,7 @@
-import birl
-import birl/duration.{Duration}
 import gleam/list
 import gleam/option.{type Option}
 import grille_pain/internals/data/toast.{type Toast, Toast}
+import grille_pain/internals/global
 import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
 
@@ -67,7 +66,7 @@ fn update_toast(model: Model, id: Int, updater: fn(Toast) -> Toast) {
 
 pub fn show(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.utc_now()
+  let now = global.now()
   Toast(..toast, displayed: toast.Show, running: True, last_schedule: now)
 }
 
@@ -78,16 +77,16 @@ pub fn hide(model: Model, id: Int) {
 
 pub fn stop(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.utc_now()
-  let Duration(elapsed_time) = birl.difference(now, toast.last_schedule)
-  let remaining = toast.remaining - elapsed_time / 1000
+  let now = global.now()
+  let duration = now - toast.last_schedule
+  let remaining = toast.remaining - duration
   let iteration = toast.iteration + 1
   Toast(..toast, running: False, remaining:, iteration:)
 }
 
 pub fn resume(model: Model, id: Int) {
   use toast <- update_toast(model, id)
-  let now = birl.utc_now()
+  let now = global.now()
   Toast(..toast, running: True, last_schedule: now)
 }
 

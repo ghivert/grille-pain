@@ -1,4 +1,4 @@
-import birl
+import grille_pain/internals/global
 import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
 
@@ -17,7 +17,7 @@ pub type Toast {
     displayed: DisplayState,
     running: Bool,
     remaining: Int,
-    last_schedule: birl.Time,
+    last_schedule: Int,
     iteration: Int,
     bottom: Int,
     level: Level,
@@ -42,7 +42,7 @@ pub fn new(
     displayed: WillShow,
     running: False,
     remaining:,
-    last_schedule: birl.utc_now(),
+    last_schedule: global.now(),
     iteration: 0,
     bottom: compute_bottom_position(root, id),
     level:,

@@ -11,11 +11,10 @@ links = [{title = "Sponsor", href = "https://github.com/sponsors/ghivert"}]
 repository = {type = "github", user = "ghivert", repo = "grille-pain"}
 
 [dependencies]
-birl = ">= 1.6.0 and < 2.0.0"
 gleam_stdlib = ">= 0.54.0 and < 1.0.0"
-lustre = ">= 4.4.4 and < 5.0.0"
+lustre = ">= 4.5.0 and < 5.0.0"
 sketch = ">= 4.0.0 and < 5.0.0"
 sketch_lustre = ">= 2.0.0 and < 3.0.0"
 
 [dev-dependencies]
-gleeunit = ">= 1.1.2 and < 2.0.0"
+gleeunit = ">= 1.0.0 and < 2.0.0"

@@ -7,3 +7,7 @@ export function requestAnimationFrame(callback) {
     callback()
   })
 }
+
+export function now() {
+  return Date.now()
+}
