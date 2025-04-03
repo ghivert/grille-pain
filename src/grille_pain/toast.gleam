@@ -5,6 +5,7 @@
 import gleam/function
 import gleam/option.{type Option, None, Some}
 import grille_pain/internals/data/msg
+import grille_pain/internals/data/toast
 import grille_pain/internals/effect_manager
 import grille_pain/toast/level.{type Level}
 import lustre
@@ -53,7 +54,7 @@ pub fn level(options: Options, level: Level) {
 }
 
 fn dispatch_toast(options: Options, message: String) {
-  use uuid <- function.tap(uuid())
+  use uuid <- function.tap(toast.uuid())
   use dispatch <- effect_manager.call
   let Options(timeout:, level:, sticky:) = options
   let level = option.unwrap(level, level.Standard)
@@ -102,9 +103,4 @@ pub fn hide(id: String) {
   msg.UserHidToast(id)
   |> lustre.dispatch
   |> dispatch
-}
-
-@external(javascript, "./toast.ffi.mjs", "uuid")
-fn uuid() -> String {
-  ""
 }

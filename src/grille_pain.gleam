@@ -15,8 +15,10 @@ import grille_pain/internals/data/model.{type Model, Model}
 import grille_pain/internals/data/msg.{type Msg}
 import grille_pain/internals/data/toast
 import grille_pain/internals/effect_manager
+import grille_pain/internals/global
 import grille_pain/internals/lustre/schedule.{schedule}
 import grille_pain/internals/setup
+import grille_pain/internals/view
 import grille_pain/options.{type Options}
 import lustre
 import lustre/effect
@@ -26,10 +28,9 @@ import lustre/effect
 /// Use `grille_pain/options` to provide and customise options.
 pub fn setup(opts: Options) {
   use #(lustre_root, shadow) <- result.try(setup.mount())
-  use view <- result.try(setup.view(shadow))
   use dispatcher <- result.map({
     fn(_) { #(model.new(shadow, opts.timeout), effect.none()) }
-    |> lustre.application(update, view)
+    |> lustre.application(update, view.view)
     |> lustre.start(lustre_root, Nil)
     |> error.lustre
   })
@@ -149,7 +150,7 @@ fn update_display(model: Model) {
       use dispatch <- effect.from()
       dispatch({
         msg.LustreRequestedAnimationFrame({
-          use <- request_animation_frame()
+          use <- global.request_animation_frame()
           dispatch(msg.BrowserUpdatedToasts)
         })
       })
@@ -164,13 +165,10 @@ fn update_toasts(model: Model) {
       use dispatch <- effect.from()
       dispatch({
         msg.LustreRequestedAnimationFrame({
-          use <- request_animation_frame()
+          use <- global.request_animation_frame()
           dispatch(msg.LustreComputedToasts)
         })
       })
     }
   }
 }
-
-@external(javascript, "./global.ffi.mjs", "requestAnimationFrame")
-fn request_animation_frame(next: fn() -> Nil) -> model.AnimationFrame

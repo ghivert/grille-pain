@@ -9,15 +9,13 @@ import grille_pain/internals/view/progress_bar
 import grille_pain/internals/view/theme
 import grille_pain/toast/level.{type Level}
 import lustre/attribute
+import lustre/element
+import lustre/element/html
 import lustre/event
-import sketch/css
-import sketch/css/length.{px}
-import sketch/lustre/element
-import sketch/lustre/element/html
 
 pub fn view(model: Model) {
   let toasts = model.toasts
-  element.keyed(html.div_([attribute.class("grille-pain")], _), {
+  element.keyed(html.div([attribute.class("grille-pain")], _), {
     use toast <- list.map(toasts)
     let id = int.to_string(toast.id)
     #(id, view_toast(toast))
@@ -49,10 +47,9 @@ fn select_on_click_action(toast: Toast) {
 fn toast_container(toast: Toast, children: List(element.Element(Msg))) {
   let mouse_enter = event.on_mouse_enter(msg.UserEnteredToast(toast.id))
   let mouse_leave = event.on_mouse_leave(msg.UserLeavedToast(toast.id))
-  [toast_colors(toast.level), toast_class()]
-  |> list.map(css.compose)
-  |> css.class
-  |> html.div([mouse_enter, mouse_leave], children)
+  let colors = toast_colors(toast.level)
+  let toast = attribute.class("toast")
+  html.div([mouse_enter, mouse_leave, toast, colors], children)
 }
 
 fn toast_progress_bar(toast: Toast) {
@@ -61,25 +58,28 @@ fn toast_progress_bar(toast: Toast) {
 }
 
 fn toast_wrapper(toast: Toast, attributes, children) {
-  let min_bot = int.max(0, toast.bottom)
-  css.class([
-    css.padding(px(12)),
-    css.position("fixed"),
-    css.top(px(min_bot)),
-    css.transition(case toast.displayed {
-      toast.Show | toast.WillHide -> "right 0.7s, top 0.7s"
-      toast.WillShow -> "right 0.7s"
-    }),
-    css.z_index(1_000_000),
-    case toast.displayed {
-      toast.Show -> css.right(px(0))
-      toast.WillShow | toast.WillHide -> {
-        let width = var("grille_pain-width", "320px")
-        css.right_("calc(-1 * " <> width <> " - 100px)")
-      }
-    },
-  ])
-  |> html.div(attributes, children)
+  let transition =
+    attribute.class(case toast.displayed {
+      toast.Show | toast.WillHide -> "toast-wrapper-all"
+      toast.WillShow -> "toast-wrapper-right"
+    })
+  let right = #("right", case toast.displayed {
+    toast.Show -> "0px"
+    toast.WillShow | toast.WillHide -> {
+      let width = var("grille_pain-width", "320px")
+      "calc(-1 * " <> width <> " - 100px)"
+    }
+  })
+  let top = #("top", int.to_string(toast.bottom) <> "px")
+  html.div(
+    [
+      attribute.class("toast-wrapper"),
+      transition,
+      attribute.style([right, top]),
+      ..attributes
+    ],
+    children,
+  )
 }
 
 fn wrapper_dom_classes(toast: Toast) {
@@ -95,42 +95,17 @@ fn wrapper_dom_classes(toast: Toast) {
   ])
 }
 
-fn toast_class() {
-  css.class([
-    css.display("flex"),
-    css.flex_direction("column"),
-    // Sizes
-    css.width_(var("grille_pain-toast-width", "320px")),
-    css.min_height_(var("grille_pain-toast-min-height", "64px")),
-    css.max_height_(var("grille_pain-toast-max-height", "800px")),
-    // Spacings
-    css.border_radius_(var("grille_pain-toast-border-radius", "6px")),
-    // Colors
-    css.box_shadow("0px 4px 12px rgba(0, 0, 0, 0.1)"),
-    // Animation
-    css.overflow("hidden"),
-    css.cursor("pointer"),
-  ])
-}
-
 fn toast_colors(level: Level) {
   let #(background, text_color) = theme.color(from: level)
   let level = level.to_string(level)
   let background_ = "grille_pain-" <> level <> "-background"
   let text = "grille_pain-" <> level <> "-text-color"
-  css.class([
-    css.background(var(background_, background)),
-    css.color(var(text, text_color)),
+  attribute.style([
+    #("background", var(background_, background)),
+    #("color", var(text, text_color)),
   ])
 }
 
-fn toast_content(attributes, children) {
-  css.class([
-    css.display("flex"),
-    css.align_items("center"),
-    css.flex("1"),
-    css.padding_("8px 16px"),
-    css.font_size(px(14)),
-  ])
-  |> html.div(attributes, children)
+pub fn toast_content(attributes, children) {
+  html.div([attribute.class("toast-content"), ..attributes], children)
 }

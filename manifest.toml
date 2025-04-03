@@ -8,13 +8,9 @@ packages = [
   { name = "gleam_stdlib", version = "0.58.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "091F2D2C4A3A4E2047986C47E2C2C9D728A4E068ABB31FDA17B0D347E6248467" },
   { name = "gleeunit", version = "1.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "0E6C83834BA65EDCAAF4FE4FB94AC697D9262D83E6F58A750D63C9F6C8A9D9FF" },
   { name = "lustre", version = "4.6.4", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_json", "gleam_otp", "gleam_stdlib"], otp_app = "lustre", source = "hex", outer_checksum = "CC59564624A4A1D855B5FEB55D979A072B328D0368E82A1639F180840D6288E9" },
-  { name = "sketch", version = "4.0.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_otp", "gleam_stdlib"], otp_app = "sketch", source = "hex", outer_checksum = "AF090E77F6FD02467DABD8F0EDC1C329482853698FE6DB33B86D7D05C1BE32F4" },
-  { name = "sketch_lustre", version = "2.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "lustre", "sketch"], otp_app = "sketch_lustre", source = "hex", outer_checksum = "7F8CE798F2D3989D45DA4D4EDF0ABCE7EB84F5E6236A7C2F5A3AE8095FC9DDFF" },
 ]
 
 [requirements]
 gleam_stdlib = { version = ">= 0.54.0 and < 1.0.0" }
 gleeunit = { version = ">= 1.0.0 and < 2.0.0" }
 lustre = { version = ">= 4.5.0 and < 5.0.0" }
-sketch = { version = ">= 4.0.0 and < 5.0.0" }
-sketch_lustre = { version = ">= 2.0.0 and < 3.0.0" }

@@ -69,16 +69,21 @@ pub fn by_iteration(toast: Toast, id: Int, iteration: Int) {
   toast.id == id && toast.iteration == iteration
 }
 
-@external(javascript, "../../../toast.ffi.mjs", "computeToastSize")
+@external(javascript, "./toast.ffi.mjs", "computeToastSize")
 pub fn compute_size(_id: Int, _root: Shadow) -> Int {
   // That function can probably never be reached, since `grille_paint` will
   // never be instanciated on the BEAM.
   0
 }
 
-@external(javascript, "../../../toast.ffi.mjs", "computeBottomPosition")
+@external(javascript, "./toast.ffi.mjs", "computeBottomPosition")
 pub fn compute_bottom_position(_root: Shadow, _id: Int) -> Int {
   // That function can probably never be reached, since `grille_paint` will
   // never be instanciated on the BEAM.
   0
+}
+
+@external(javascript, "./toast.ffi.mjs", "uuid")
+pub fn uuid() -> String {
+  ""
 }

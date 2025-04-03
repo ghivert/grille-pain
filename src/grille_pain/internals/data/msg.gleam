@@ -1,11 +1,11 @@
 import gleam/option.{type Option}
-import grille_pain/internals/data/model
+import grille_pain/internals/global
 import grille_pain/toast/level.{type Level}
 
 pub type Msg {
   BrowserUpdatedToasts
   LustreComputedToasts
-  LustreRequestedAnimationFrame(model.AnimationFrame)
+  LustreRequestedAnimationFrame(global.AnimationFrame)
   ToastHidDisplay(id: Int)
   ToastTimedOut(id: Int, iteration: Int)
   UserAddedToast(

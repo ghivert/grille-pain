@@ -12,7 +12,7 @@ pub fn append_child(_root: Shadow, _element: Element) -> Result(Shadow, Nil) {
   Error(Nil)
 }
 
-@external(javascript, "./element.ffi.mjs", "addKeyframe")
-pub fn add_keyframe(_root: Shadow) -> Result(Shadow, Nil) {
+@external(javascript, "./element.ffi.mjs", "addStyles")
+pub fn add_styles(_root: Shadow) -> Result(Shadow, Nil) {
   Error(Nil)
 }

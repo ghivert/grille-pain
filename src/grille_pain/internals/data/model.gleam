@@ -5,15 +5,13 @@ import grille_pain/internals/global
 import grille_pain/internals/shadow.{type Shadow}
 import grille_pain/toast/level.{type Level}
 
-pub type AnimationFrame
-
 pub type Model {
   Model(
     toasts: List(Toast),
     id: Int,
     timeout: Int,
     root: Shadow,
-    next_frame: Option(AnimationFrame),
+    next_frame: Option(global.AnimationFrame),
     to_show: List(ToShow),
   )
 }

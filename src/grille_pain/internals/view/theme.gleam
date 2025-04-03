@@ -1,22 +1,22 @@
 import grille_pain/toast/level
 
-pub const info = "#3498db"
+pub const info = "var(--info)"
 
-pub const success = "#07bc0c"
+pub const success = "var(--success)"
 
-pub const warning = "#f1c40f"
+pub const warning = "var(--warning)"
 
-pub const error = "#e74c3c"
+pub const error = "var(--error)"
 
-pub const color_transparent = "rgba(255, 255, 255, 0.7)"
+pub const color_transparent = "var(--color-transparent)"
 
-pub const light_transparent = "rgb(0, 0, 0, 0.7)"
+pub const light_transparent = "var(--light-transparent)"
 
-pub const dark_transparent = "rgb(255, 255, 255, 0.7)"
+pub const dark_transparent = "var(--dark-transparent)"
 
-pub const dark = "#121212"
+pub const dark = "var(--dark)"
 
-pub const light = "#fff"
+pub const light = "var(--light)"
 
 pub fn color(from level: level.Level) {
   case level {
@@ -30,7 +30,7 @@ pub fn color(from level: level.Level) {
 
 @external(javascript, "./theme.ffi.mjs", "isDark")
 pub fn is_dark() -> Bool {
-  // That function can probably never be reached, since `grille_paint` will
+  // That function can probably never be reached, since `grille_pain` will
   // never be instanciated on the BEAM.
   False
 }

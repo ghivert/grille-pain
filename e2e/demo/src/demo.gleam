@@ -3,7 +3,6 @@ import gleam/list
 import gleam/pair
 import gleam/result
 import grille_pain
-import grille_pain/internals/view/theme
 import grille_pain/lustre/toast
 import grille_pain/toast/level
 import layout
@@ -106,31 +105,31 @@ fn simple_toasts() {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        theme.light,
+        "#fff",
         layout.palette.black,
         [event.on_click(DisplayBasicToast("Toast", toast.toast))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        theme.success,
+        "#07bc0c",
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Success", toast.success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        theme.info,
+        "#3498db",
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Info", toast.info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        theme.warning,
+        "#f1c40f",
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Warning", toast.warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        theme.error,
+        "#e74c3c",
         layout.palette.white,
         [event.on_click(DisplayBasicToast("Error", toast.error))],
         [html.text("Error")],
@@ -162,31 +161,31 @@ fn custom_toasts(model: Model) {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        theme.light,
+        "#fff",
         layout.palette.black,
         [event.on_click(DisplayCustomToast(level.Standard))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        theme.success,
+        "#07bc0c",
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        theme.info,
+        "#3498db",
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        theme.warning,
+        "#f1c40f",
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        theme.error,
+        "#e74c3c",
         layout.palette.white,
         [event.on_click(DisplayCustomToast(level.Error))],
         [html.text("Error")],
@@ -205,31 +204,31 @@ fn sticky_toasts() {
     ]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        theme.light,
+        "#fff",
         layout.palette.black,
         [event.on_click(DisplayStickyToast(level.Standard))],
         [html.text("Toast")],
       ),
       layout.toast_button(
-        theme.success,
+        "#07bc0c",
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Success))],
         [html.text("Success")],
       ),
       layout.toast_button(
-        theme.info,
+        "#3498db",
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Info))],
         [html.text("Info")],
       ),
       layout.toast_button(
-        theme.warning,
+        "#f1c40f",
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Warning))],
         [html.text("Warning")],
       ),
       layout.toast_button(
-        theme.error,
+        "#e74c3c",
         layout.palette.white,
         [event.on_click(DisplayStickyToast(level.Error))],
         [html.text("Error")],
@@ -238,7 +237,7 @@ fn sticky_toasts() {
     html.br_([]),
     layout.actions_wrapper([], [
       layout.toast_button(
-        theme.error,
+        "#e74c3c",
         layout.palette.white,
         [event.on_click(HideStickyToasts)],
         [html.text("Hide sticky toasts")],
