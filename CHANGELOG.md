@@ -1,3 +1,7 @@
+## v1.1.4 - 2025-06-02
+
+- Adapt for new Lustre 5.
+
 ## v1.1.3 - 2025-04-03
 
 - Drop `setTimeout` in favour of `requestAnimationFrame` everywhere in the app.

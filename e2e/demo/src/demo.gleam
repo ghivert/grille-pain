@@ -34,7 +34,7 @@ pub type Msg {
 pub fn main() {
   let init = fn(_) { #(Model(timeout: 0, stickys: []), effect.none()) }
   let assert Ok(_) = grille_pain.simple()
-  let assert Ok(stylesheet) = sketch.stylesheet(strategy: sketch.Ephemeral)
+  let assert Ok(stylesheet) = sketch_lustre.setup()
   let assert Ok(_) =
     view(_, stylesheet)
     |> lustre.application(init, update, _)
@@ -46,16 +46,11 @@ fn update(model: Model, msg: Msg) {
     DisplayBasicToast(content, toast) -> #(model, toast(content))
     DisplayCustomToast(level) -> {
       pair.new(model, {
-        effect.batch({
-          list.repeat(0, 10)
-          |> list.map(fn(_) {
-            let content = level.to_string(level)
-            toast.options()
-            |> toast.timeout(model.timeout * int.max(100, int.random(1000)))
-            |> toast.level(level)
-            |> toast.custom(content <> base_content)
-          })
-        })
+        let content = level.to_string(level)
+        toast.options()
+        |> toast.timeout(model.timeout * int.max(100, int.random(1000)))
+        |> toast.level(level)
+        |> toast.custom(content <> base_content)
       })
     }
     DisplayStickyToast(level) -> {

@@ -55,12 +55,12 @@ pub fn level(options: Options, level: Level) {
 
 fn dispatch_toast(options: Options, message: String) {
   use uuid <- function.tap(toast.uuid())
-  use dispatch <- effect_manager.call
+  use runtime <- effect_manager.call
   let Options(timeout:, level:, sticky:) = options
   let level = option.unwrap(level, level.Standard)
   msg.UserAddedToast(uuid:, message:, level:, timeout:, sticky:)
   |> lustre.dispatch
-  |> dispatch
+  |> lustre.send(runtime, _)
 }
 
 pub fn info(content: String) {
@@ -99,8 +99,8 @@ pub fn custom(options: Options, content: String) {
 
 /// Hide toast. Sticky toast can only be hidden using `hide`.
 pub fn hide(id: String) {
-  use dispatch <- effect_manager.call
+  use runtime <- effect_manager.call
   msg.UserHidToast(id)
   |> lustre.dispatch
-  |> dispatch
+  |> lustre.send(runtime, _)
 }

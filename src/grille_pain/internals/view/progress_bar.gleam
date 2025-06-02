@@ -9,11 +9,15 @@ import lustre/element/html
 pub fn view(toast: Toast) {
   let animation_duration = int.to_string(toast.animation_duration)
   let play_state = toast.running_to_string(toast.running)
-  let duration = #("animation-duration", animation_duration <> "ms")
-  let background = #("background", pb_background_color(toast.level))
-  let play_state = #("animation-play-state", play_state)
-  let style = attribute.style([duration, background, play_state])
-  html.div([attribute.class("progress-bar"), style], [])
+  html.div(
+    [
+      attribute.class("progress-bar"),
+      attribute.style("animation-duration", animation_duration <> "ms"),
+      attribute.style("background", pb_background_color(toast.level)),
+      attribute.style("animation-play-state", play_state),
+    ],
+    [],
+  )
 }
 
 fn pb_background_color(level: Level) {
