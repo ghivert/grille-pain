@@ -115,7 +115,7 @@ grille-pain {
   --grille_pain-width: 320px;                       /* Wrapper size*/
   --grille_pain-toast-width: 320px;                 /* Toast size */
   --grille_pain-toast-min-height: 64px;             /* Toast min height */
-  --grille_pain-toast-max-height: 800px;1           /* Toast max height */
+  --grille_pain-toast-max-height: 800px;            /* Toast max height */
   --grille_pain-toast-border-radius: 6px;           /* Toast border radius */
 
   /* Color for standard toast */
