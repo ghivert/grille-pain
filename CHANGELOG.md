@@ -1,3 +1,7 @@
+## v1.1.4 - 2025-12-24
+
+- Adapt for Gleam 1.13.
+
 ## v1.1.4 - 2025-06-02
 
 - Adapt for new Lustre 5.

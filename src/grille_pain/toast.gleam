@@ -2,11 +2,11 @@
 //// toasts. They should be used when your outside of lustre applications. Otherwise
 //// you should [head up to `grille_pain/lustre/toast`](/grille_pain/grille_pain/lustre/toast.html).
 
-import gleam/function
 import gleam/option.{type Option, None, Some}
 import grille_pain/internals/data/msg
 import grille_pain/internals/data/toast
 import grille_pain/internals/effect_manager
+import grille_pain/internals/function
 import grille_pain/toast/level.{type Level}
 import lustre
 

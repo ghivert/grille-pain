@@ -1,34 +1,36 @@
 import * as gleam from '../../gleam.mjs'
 
 export function create(tag) {
-  if (typeof document === 'undefined') return new gleam.Error()
-  return new gleam.Ok(document.createElement(tag))
+  if (typeof document === 'undefined') return gleam.Result$Error()
+  const element = document.createElement(tag)
+  return gleam.Result$Ok(element)
 }
 
 export function attachShadow(element) {
-  if (element.attachShadow === undefined) return new gleam.Error()
-  return new gleam.Ok(element.attachShadow({ mode: 'open' }))
+  if (element.attachShadow === undefined) return gleam.Result$Error()
+  const root = element.attachShadow({ mode: 'open' })
+  return gleam.Result$Ok(root)
 }
 
 export function appendChild(root, child) {
   root.appendChild(child)
-  return new gleam.Ok(root)
+  return gleam.Result$Ok(root)
 }
 
 export function body() {
-  if (typeof document === 'undefined') return new gleam.Error()
-  return new gleam.Ok(document.body)
+  if (typeof document === 'undefined') return gleam.Result$Error()
+  return gleam.Result$Ok(document.body)
 }
 
 export function addStyles(shadowRoot) {
   try {
-    if (typeof CSSStyleSheet === 'undefined') return new gleam.Error()
+    if (typeof CSSStyleSheet === 'undefined') return gleam.Result$Error()
     const stylesheet = new CSSStyleSheet()
     stylesheet.replaceSync(styles)
     shadowRoot.adoptedStyleSheets.push(stylesheet)
-    return new gleam.Ok(shadowRoot)
+    return gleam.Result$Ok(shadowRoot)
   } catch (error) {
-    return new gleam.Error()
+    return gleam.Result$Error()
   }
 }
 
